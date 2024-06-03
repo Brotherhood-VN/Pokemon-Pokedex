@@ -4,11 +4,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@assets/": ["src/app/assets/*"],
-      "@constants/": ["src/app/core/constants/*"],
-      "@environments/": ["src/app/environments/*"],
-      "@models/": ["src/app/core/models/*"],
-      "@services/*": ["src/app/core/serivces/*"],
+      "@assets/*": ["src/assets/*"],
+      "@constants/*": ["src/app/core/constants/*"],
+      "@env/*": ["src/environments/*"],
+      "@guards/*": ["src/app/guards/*"],
+      "@models/*": ["src/app/core/models/*"],
+      "@services/*": ["src/app/core/services/*"],
       "@utilities/*": ["src/app/core/utilities/*"],
     },
     "outDir": "./dist/out-tsc",
