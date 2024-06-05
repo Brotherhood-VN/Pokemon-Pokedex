@@ -22,12 +22,12 @@ namespace API.Models
         public string Description { get; set; }
         public bool Status { get; set; }
         public bool IsDelete { get; set; }
-        public long Create_By { get; set; }
+        public long CreateBy { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime Create_Time { get; set; }
-        public long? Update_By { get; set; }
+        public DateTime CreateTime { get; set; }
+        public long? UpdateBy { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime? Update_Time { get; set; }
+        public DateTime? UpdateTime { get; set; }
         [InverseProperty("Area")]
         public virtual ICollection<Region> Regions { get; set; }
         [InverseProperty("Area")]
