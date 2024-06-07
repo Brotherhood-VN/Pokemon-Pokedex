@@ -5,20 +5,13 @@ namespace API.Helpers.Constants
         public static readonly List<string> Menus = new()
         {
             // Systems
-            "About", "Account", "AccountType",
-            "BookingStatus", "Branch",
-            "Combo",
-            "Dashboard", "Department", "District",
+            "Account", "AccountType",
+            "Classification", "Condition",
             "Function",
             "Gender",
-            "InvoiceStatus", "InvoiceType",
-            "MemberType", "Menu",
-            "OrderStatus", "OrderType",
-            "Position", "ProductCategory", "ProductType", "Province",
+            "Menu",
             "Role",
-            "Service", "ServiceCategory", "ServiceType", "Staff", "StaffType",
-            "TermAndPolicy",
-            "Ward"
+            "Skill", "Stone"
         };
 
         public static readonly List<string> Actions = new()
