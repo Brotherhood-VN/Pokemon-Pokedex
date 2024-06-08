@@ -1,0 +1,54 @@
+<form #functionForm="ngForm" class="dialog-body formgrid grid">
+    <!-- Area -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="area">Area <span class="required">*</span></label>
+        <input pInputText id="area" name="area" [(ngModel)]="func.area" [required]="true" disabled />
+    </div>
+    <!-- Controller -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="controller">Controller <span class="required">*</span></label>
+        <input pInputText id="controller" name="controller" [(ngModel)]="func.controller" [required]="true" disabled />
+    </div>
+    <!-- Title -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="title">Title <span class="required">*</span></label>
+        <input pInputText id="title" name="title" [(ngModel)]="func.title" [required]="true" disabled />
+    </div>
+    <!-- Action -->
+    <div class="flex flex-column gap-2 col-6 mt-3">
+        <label for="action">Action <span class="required">*</span></label>
+        <input pInputText id="action" name="action" [(ngModel)]="func.action" [required]="true" [disabled]="func.isUpdate" />
+    </div>
+    <!-- Description -->
+    <div class="flex flex-column gap-2 col-6 mt-3">
+        <label for="description">Description <span class="required">*</span></label>
+        <input pInputText id="description" name="description" [(ngModel)]="func.description" [required]="true" />
+    </div>
+    <!-- Seq -->
+    <div class="flex flex-column gap-2 col-2 mt-3">
+        <label for="Seq">Sequence <span class="required">*</span></label>
+        <p-inputNumber inputId="Seq" name="Seq" [(ngModel)]="func.seq" [showButtons]="true" autoWidth="false"
+            [style]="{'width':'100%'}" [required]="true">
+        </p-inputNumber>
+    </div>
+    <!-- IsMenu and IsShow-->
+    <div class="flex gap-3 col-4 mt-4 pt-5">
+        <div class="flex align-items-center">
+            <p-checkbox label="Is Menu" name="isMenu" value="Is Menu" [binary]="true" [(ngModel)]="func.isMenu">
+            </p-checkbox>
+        </div>
+        <div class="flex align-items-center">
+            <p-checkbox label="Is Show" name="isShow" value="Is Show" [binary]="true" [(ngModel)]="func.isShow">
+            </p-checkbox>
+        </div>
+    </div>
+</form>
+
+<div class="flex align-items-center justify-content-end gap-2 mt-5">
+    <button pButton icon="pi pi-save" class="p-button-success p-button-outlined" (click)="save(functionForm)"
+        label="Lưu" [disabled]="functionForm.invalid">
+    </button>
+    <button pButton icon="pi pi-times" class="p-button-danger p-button-outlined" (click)="close(functionForm)"
+        label="Hủy">
+    </button>
+</div>

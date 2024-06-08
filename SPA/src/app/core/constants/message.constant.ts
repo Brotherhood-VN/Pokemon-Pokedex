@@ -22,6 +22,9 @@ export class MessageConstants {
 
     public static CONFIRM_PAY_MSG = "Bạn có chắc muốn thanh toán khoản này?";
 
+    public static CONFIRM_SAVE_MSG = "Bạn có chắc muốn lưu bản ghi này?";
+    public static CONFIRM_SAVE_RANGE_MSG = "Bạn có chắc muốn lưu những bản ghi này?";
+
     public static CONFIRM_SET_DEFAULT_MSG = "Bạn có chắc muốn đặt mặc định bản ghi này?";
     public static CONFIRM_SET_IS_HOME_MSG = "Bạn có chắc muốn hiển thị bản ghi này tại trang chủ?";
     public static CONFIRM_SET_NOT_IS_HOME_MSG = "Bạn có chắc muốn bỏ hiển thị bản ghi này tại trang chủ?";
@@ -79,7 +82,7 @@ export class MessageConstants {
 
     public static UNAUTHORIZED = "Không có quyền truy cập!";
 
-    public static UN_KNOWN_ERROR = "Oops! Xin lỗi; Đã xảy ra lỗi trong khi xử lý yêu cầu của bạn";
+    public static UN_KNOWN_ERROR = "Ối! Xin lỗi, đã xảy ra lỗi trong khi xử lý yêu cầu của bạn";
 
     public static NO_DATA = "Không có dữ liệu!";
     public static DATA_FOUND = "Dữ liệu không tồn tại!";
@@ -91,7 +94,7 @@ export class MessageConstants {
     public static FILE_VIDEO_SIZE = "Dung lượng tệp tối đa là 20MB!";
 
     public static SELECT_DATE = "Hãy chọn ngày bắt đầu và ngày kết thúc!";
-    public static SELECT_FORMAT_DATE = 'Hãy nhập ngày theo định dạng "YYYY/MM/DD"!';
+    public static SELECT_FORMAT_DATE = 'Hãy nhập ngày theo định dạng "DD/MM/YYYY"!';
     public static COMPARE_DATE = "Ngày bắt đầu không lớn hơn ngày kết thúc!";
 
     public static QUERY_SUCCESS = "Truy vấn dữ liệu thành công!";

@@ -1,0 +1,4 @@
+<quill-editor [style]="{'height': height + 'px'}" [(ngModel)]="text"
+    (onEditorChanged)="changedEditor($event)" [modules]="modules" [readOnly]="readOnly"
+    [placeholder]="'Nhập nội dung...'">
+</quill-editor>

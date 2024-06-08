@@ -1,0 +1,123 @@
+<p-breadcrumb class="max-w-full" [model]="breadcrumbs" [home]="home"></p-breadcrumb>
+
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Chức năng</h5>
+
+            <p-table [value]="functions" dataKey="controller" [expandedRowKeys]="expandedRows"
+                [(contextMenuSelection)]="selectedFunction" [contextMenu]="cm" responsiveLayout="scroll">
+                <!-- Search and clear -->
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" name="keyword" [(ngModel)]="params.keyword" (keyup.enter)="search()"
+                                placeholder="Nhập từ khóa tìm kiếm..." class="w-full" />
+                            <i *ngIf="params.keyword" id="clear" class="pi pi-times" (click)="clearSearch()"></i>
+                        </span>
+                        <div>
+                            <button class="p-button-outlined mb-2 mr-2" pButton
+                                icon="pi pi-fw {{isExpanded ? 'pi-chevron-up' : 'pi-chevron-down'}}"
+                                label="{{isExpanded ? 'Collapse All' : 'Expand All'}}" (click)="expandAll()">
+                            </button>
+                            <button pButton label="Thêm mới" class="p-button-outlined mb-2 text-green-500"
+                                icon="pi pi-plus" (click)="createGroup()">
+                            </button>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem"></th>
+                        <th>Area</th>
+                        <th>Controller</th>
+                        <th>Title</th>
+                        <th>UpdateTime</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-func let-expanded="expanded">
+                    <tr [pContextMenuRow]="func">
+                        <td>
+                            <button type="button" pButton pRipple [pRowToggler]="func"
+                                class="p-button-text p-button-rounded p-button-plain"
+                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+                            </button>
+                        </td>
+                        <td style="min-width: 12rem;">{{func.area}}</td>
+                        <td style="min-width: 8rem;">{{func.controller}}</td>
+                        <td style="min-width: 8rem;">{{func.title}}</td>
+                        <td style="min-width: 8rem;">{{func.updateTime | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="rowexpansion" let-func>
+                    <tr>
+                        <td colspan="6">
+                            <div class="p-3">
+                                <p-table [value]="func.actionDetails" dataKey="action" responsiveLayout="scroll">
+                                    <ng-template pTemplate="header">
+                    <tr class="body-thread">
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>Is Menu</th>
+                        <th>Is Show</th>
+                        <th>Seq</th>
+                        <th class="text-center" style="width: 4rem">
+                            <button pButton pRipple class="p-button-rounded p-button-outlined text-green-500" icon="pi pi-plus"
+                                (click)="create(func)">
+                            </button>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-act>
+                    <tr>
+                        <td>{{act.action}}</td>
+                        <td>{{act.description}}</td>
+                        <td>
+                            <p-checkbox [name]="act.action + '_' + act.title + '_isMenu'" [(ngModel)]="act.isMenu"
+                                [binary]="true" inputId="binary" disabled>
+                            </p-checkbox>
+                        </td>
+                        <td>
+                            <p-checkbox [name]="act.action + '_' + act.title + '_isShow'" [(ngModel)]="act.isShow"
+                                [binary]="true" inputId="binary" disabled>
+                            </p-checkbox>
+                        </td>
+                        <td>{{act.seq}}</td>
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button pButton pRipple type="button" icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-text text-yellow-500" (click)="update(func, act)">
+                                </button>
+                                <button pButton pRipple type="button" icon="pi pi-trash"
+                                    class="p-button-rounded p-button-text text-red-500" (click)="delete(func, act)">
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Data not found -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="100%" class="text-center text-orange-300">No data found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        </td>
+        </tr>
+        </ng-template>
+        </p-table>
+
+        <p-contextMenu #cm [model]="contextItems"></p-contextMenu>
+
+        <div class="flex justify-content-end pagination" *ngIf="pagination?.totalCount > 0">
+            <p-paginator (onPageChange)="onPageChange($event)" [rows]="pagination.pageSize"
+                [showCurrentPageReport]="true" [rowsPerPageOptions]="rowsPerPageOptions"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [first]="(pagination.pageNumber - 1) * pagination.pageSize" [totalRecords]="pagination.totalCount">
+            </p-paginator>
+        </div>
+    </div>
+</div>

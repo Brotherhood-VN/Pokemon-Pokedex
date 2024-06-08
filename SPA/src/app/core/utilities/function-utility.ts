@@ -54,4 +54,15 @@ export class FunctionUtility {
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
   }
+
+  static generateASCII = function (_length: number) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = ' ';
+    const charactersLength = characters.length;
+    for (let i = 0; i < charactersLength; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result.substring(0, _length + 1).toUpperCase();
+  }
 }

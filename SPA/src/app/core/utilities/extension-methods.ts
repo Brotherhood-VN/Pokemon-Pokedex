@@ -22,13 +22,23 @@ declare global {
     toStringDate(_format?: string): string;
     toStringTime(_format?: string): string;
     toStringDateTime(_format?: string): string;
+
+    toLowerCaseFirst(): string;
+    toUpperCaseFirst(): string;
+
     generateASCII(_length: number): string;
+    generateUpper(_length: number): string;
     random(_length: number): string;
   }
 
   interface Number {
     toStringLeadingZeros(targetLength: number): string;
     randomBetween(min: number, max: number): number;
+  }
+
+  interface Array<T> {
+    remove(item: T): Array<T>;
+    findDuplicateItems(filterConditions: string | Array<string>): T[];
   }
 }
 
@@ -126,15 +136,36 @@ String.prototype.toStringDateTime = function (_format: string = 'dd/MM/yyyy HH:m
   return new DatePipe('en-GB').transform(_this, _format);
 }
 
+String.prototype.toLowerCaseFirst = function (): string {
+  const _this = this as string;
+  return _this.charAt(0).toLowerCase() + _this.slice(1);
+}
+
+String.prototype.toUpperCaseFirst = function (): string {
+  const _this = this as string;
+  return _this.charAt(0).toUpperCase() + _this.slice(1);
+}
+
 String.prototype.generateASCII = function (_length: number): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = ' ';
   const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < charactersLength; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
 
-  return result;
+  return result.substring(0, _length + 1);
+}
+
+String.prototype.generateUpper = function (_length: number): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = ' ';
+  const charactersLength = characters.length;
+  for (let i = 0; i < charactersLength; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result.substring(0, _length + 1);
 }
 
 String.prototype.random = function (_length: number): string {
@@ -149,5 +180,42 @@ Number.prototype.toStringLeadingZeros = function (targetLength: number): string 
 Number.prototype.randomBetween = function (min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
+Array.prototype.remove = function <T>(this: T[], elem: T): T[] {
+  return this.splice(this.indexOf(elem), 1);
+}
+
+Array.prototype.findDuplicateItems = function <T>(filterConditions: string | Array<string>): T[] {
+  const _this = this as T[];
+
+  let foundElements: T[] = [];
+  if (typeof (filterConditions) === 'string') {
+    _this.forEach((item: T) => {
+      if (_this.filter(x => {
+        if (item[filterConditions] instanceof Date)
+          return x[filterConditions].toStringDate() == item[filterConditions].toStringDate()
+        else
+          return x[filterConditions] === item[filterConditions]
+
+      }).length > 1)
+        foundElements.push(item);
+    });
+  }
+  else {
+    _this.forEach((item: T) => {
+      if (_this.filter(x => filterConditions.every(key => {
+        if (item[key] instanceof Date)
+          return x[key].toStringDate() == item[key].toStringDate()
+        else
+          return x[key] === item[key]
+
+      })).length > 1)
+        foundElements.push(item);
+    });
+  }
+
+  return Array.from(new Set(foundElements));
+}
+
 
 export { };

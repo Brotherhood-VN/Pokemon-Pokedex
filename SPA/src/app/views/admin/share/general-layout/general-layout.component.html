@@ -1,0 +1,135 @@
+<p-breadcrumb class="max-w-full" [model]="breadcrumbs" [home]="home"></p-breadcrumb>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h5>{{title}}</h5>
+            <p-table #dt1 [value]="data" dataKey="id" editMode="row" [rowHover]="true" responsiveLayout="scroll"
+                styleClass="p-datatable-gridlines p-size-normal">
+                <!-- Search and clear -->
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <span class="p-input-icon-left mb-2">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" name="keyword" [(ngModel)]="keyword" (keyup.enter)="search()"
+                                placeholder="Nhập từ khóa tìm kiếm..." class="w-full" />
+                            <i *ngIf="keyword !== ''" id="clear" class="pi pi-times" (click)="clearSearch()"></i>
+                        </span>
+                        <button pButton label="Thêm mới" class="p-button-outlined mb-2 text-green-500" icon="pi pi-plus"
+                            (click)="addRow(dt1)" [disabled]="disabled">
+                        </button>
+                    </div>
+                </ng-template>
+
+                <!-- Table thread -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="text-primary">
+                            Code
+                            <p-column field="code"></p-column>
+                        </th>
+                        <th class="text-primary" style="width:40%">
+                            Title
+                            <p-column field="title"></p-column>
+                        </th>
+                        <th class="text-primary" style="min-width: 10rem">
+                            Update Time
+                            <p-column field="updateTime"></p-column>
+                        </th>
+                        <th class="text-primary">
+                            Status
+                            <p-column field="status"></p-column>
+                        </th>
+                        <th style="width:10%" class="text-primary">Action</th>
+                    </tr>
+                </ng-template>
+
+                <!-- Table body -->
+                <ng-template pTemplate="body" let-item let-editing="editing" let-ri="rowIndex">
+                    <tr [pEditableRow]="item">
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="text" [name]="'code_' + ri" [(ngModel)]="item.code"
+                                        disabled>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.code}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="text" [name]="'title_' + ri" [(ngModel)]="item.title">
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.title}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-calendar [showIcon]="true" [showTime]="true" [showSeconds]="true" inputId="icon"
+                                        [name]="'updateTime_' + ri" [(ngModel)]="item.updateTime" [appendTo]="'body'"
+                                        disabled>
+                                    </p-calendar>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.updateTime | date: 'dd/MM/yyyy HH:mm:ss'}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-checkbox [name]="'status_' + ri" [(ngModel)]="item.status" [binary]="true"
+                                        inputId="binary">
+                                    </p-checkbox>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <p-checkbox [name]="'status_out_' + ri" [(ngModel)]="item.status" [binary]="true"
+                                        inputId="binary" disabled>
+                                    </p-checkbox>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button *ngIf="!editing" pButton pRipple type="button" (click)="editRow(dt1, item)"
+                                    icon="pi pi-pencil" class="p-button-rounded p-button-text text-yellow-500"
+                                    [disabled]="disabled">
+                                </button>
+                                <button *ngIf="!editing" pButton pRipple type="button" (click)="delete(item)"
+                                    icon="pi pi-trash" class="p-button-rounded p-button-text text-red-500"
+                                    [disabled]="disabled">
+                                </button>
+                                <button *ngIf="editing" pButton pRipple type="button" (click)="save(dt1, item)"
+                                    icon="pi pi-save" class="p-button-rounded p-button-text p-button-success mr-2"
+                                    [disabled]="!item.title">
+                                </button>
+                                <button *ngIf="editing" pButton pRipple type="button" (click)="cancel(dt1, item)"
+                                    icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger">
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Data not found -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="100%" class="text-center text-orange-300">Không có dữ liệu.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <div class="flex justify-content-end pagination" *ngIf="pagination?.totalCount > 0">
+                <p-paginator (onPageChange)="onPageChange($event)" [rows]="pagination.pageSize"
+                    [showCurrentPageReport]="true" [rowsPerPageOptions]="rowsPerPageOptions"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [first]="(pagination.pageNumber - 1) * pagination.pageSize" [totalRecords]="pagination.totalCount">
+                </p-paginator>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+<p-breadcrumb class="max-w-full" [model]="breadcrumbs" [home]="home"></p-breadcrumb>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Menu</h5>
+            <!-- Group button actions -->
+            <div class="mb-3">
+                <button pButton type="button" label="Hiện tất cả" (click)="expandAll()" class="p-button-outlined mr-2"
+                    icon="pi pi-angle-down">
+                </button>
+                <button pButton type="button" label="Đóng tất cả" class="p-button-warning p-button-outlined mr-2"
+                    (click)="collapseAll()" icon="pi pi-angle-up">
+                </button>
+                <button pButton type="button" label="{{dragdropable ? 'Lưu' : 'Sắp xếp'}}"
+                    [ngClass]="{'p-button-success': dragdropable, 'p-button-info': !dragdropable}"
+                    class="p-button-outlined mr-2" (click)="dragdropable ? saveDragDropable() : dragDropable()"
+                    icon="pi {{dragdropable ? 'pi-save' : 'pi-arrows-alt'}}">
+                </button>
+                <button *ngIf="dragdropable" pButton type="button" label="Hủy" class="p-button-danger p-button-outlined mr-2"
+                    (click)="cancelDragDropable()" icon="pi pi-times">
+                </button>
+                <button pButton type="button" label="Thêm mới" class="p-button-success p-button-outlined" (click)="addNode()"
+                    icon="pi pi-plus" style="float: right;">
+                </button>
+            </div>
+            <!-- Treenode menus -->
+            <p-tree #treeElement class="w-full xl:w-30rem" [value]="nodes" [draggableNodes]="dragdropable"
+                [droppableNodes]="true" draggableScope="self" droppableScope="self" selectionMode="single"
+                [(selection)]="selectedFile" [filter]="true" filterMode="strict" filterPlaceholder="Strict Filter"
+                [contextMenu]="cm" (dblclick)="toggleNode()">
+                <ng-template let-node pTemplate="default">
+                    <b>{{ node.label }}</b>
+                </ng-template>
+            </p-tree>
+            <!-- contextmenu - right mouse click menu item -->
+            <p-contextMenu #cm [model]="contextItems"></p-contextMenu>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog add menu item -->
+<p-dialog header="Header" [(visible)]="visible" [modal]="true" [style]="{ width: '50rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" (onHide)="closeDialog(menuForm)">
+    <ng-template pTemplate="header">
+        <div class="inline-flex align-items-center justify-content-center gap-2">
+            <h4 style="margin: 0;">{{titleDialog}}</h4>
+        </div>
+    </ng-template>
+    <form #menuForm="ngForm" class="dialog-body formgrid grid">
+        <!-- Controllers -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="controller-field">Select a Controller</label>
+            <p-dropdown name="controller" [options]="controllers" [(ngModel)]="controllerSelect"
+                (ngModelChange)="onControllerValueChange($event)" optionLabel="key" [filter]="true"
+                inputId="controller-field" filterBy="key" [showClear]="true" placeholder="Select a Controller"
+                autoWidth="false" appendTo="body" [style]="{'width':'100%'}">
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <div class="flex align-items-center gap-2">
+                        <div>{{ selectedOption?.key }}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-controller pTemplate="item">
+                    <div class="flex align-items-center gap-2">
+                        <div>{{ controller.key }} - {{ controller.value }}</div>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+        <!-- Icons -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="icon-field">Select a Icon</label>
+            <p-dropdown name="icon" [options]="icons" [(ngModel)]="iconSelect"
+                (ngModelChange)="onIconValueChange($event)" optionLabel="key" [filter]="true" filterBy="key"
+                inputId="icon-field" [showClear]="true" placeholder="Select a Icon" autoWidth="false" appendTo="body"
+                [style]="{'width':'100%'}">
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <div class="flex align-items-center gap-2">
+                        <i class="text-2xl pi {{selectedOption?.value}}"></i>
+                        <div>{{selectedOption?.value}}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-icon pTemplate="item">
+                    <div class="flex align-items-center gap-2">
+                        <i class="text-2xl pi {{icon.value}}"></i>
+                        <div>{{icon.value}}</div>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+        <!-- Label -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="labelText">Label <span class="required">*</span></label>
+            <input pInputText id="labelText" name="labelText" [(ngModel)]="menuItem.label" [required]="true" />
+        </div>
+        <!-- Router Link -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="routerLink">Router Link <span *ngIf="menuItem.controller" class="required">*</span></label>
+            <input pInputText id="routerLink" name="routerLink" [(ngModel)]="menuItem.routerLink"
+                [required]="menuItem.controller" />
+        </div>
+        <!-- Badge -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="badge">Badge</label>
+            <input pInputText id="badge" name="badge" [(ngModel)]="menuItem.badge" />
+        </div>
+        <!-- Title -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="title">Title</label>
+            <input pInputText id="title" name="title" [(ngModel)]="menuItem.title" />
+        </div>
+        <!-- Url -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="url">Url</label>
+            <input pInputText id="url" name="url" [(ngModel)]="menuItem.url" />
+        </div>
+        <!-- Target -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="target">Target</label>
+            <p-dropdown name="target" [options]="targets" [(ngModel)]="menuItem.target" optionLabel="key"
+                [showClear]="true" placeholder="Select a Target" autoWidth="false" appendTo="body"
+                [style]="{'width':'100%'}" [disabled]="!menuItem.url">
+            </p-dropdown>
+        </div>
+        <!-- Position -->
+        <div class="flex flex-column gap-2 col-6 mt-3">
+            <label for="Seq">Sequence <span class="required">*</span></label>
+            <p-inputNumber inputId="Seq" name="Seq" [(ngModel)]="menuItem.seq" [showButtons]="true"
+                autoWidth="false" [style]="{'width':'100%'}" [required]="true">
+            </p-inputNumber>
+        </div>
+        <!-- Visible and Separator-->
+        <div class="flex gap-3 col-6 mt-4 pt-5">
+            <div class="flex align-items-center">
+                <p-checkbox label="Visible" name="visible" value="Visible" [binary]="true"
+                    [(ngModel)]="menuItem.visible">
+                </p-checkbox>
+            </div>
+            <div class="flex align-items-center">
+                <p-checkbox label="Separator" name="separator" value="Separator" [binary]="true"
+                    [(ngModel)]="menuItem.separator">
+                </p-checkbox>
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <button pButton icon="pi pi-save" class="p-button-success p-button-outlined" (click)="save(menuForm)"
+            label="Lưu" [disabled]="menuForm.invalid">
+        </button>
+        <button pButton icon="pi pi-times" class="p-button-danger p-button-outlined" (click)="closeDialog(menuForm)"
+            label="Hủy">
+        </button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,200 @@
+<form #functionForm="ngForm" class="dialog-body formgrid grid">
+    <!-- Area -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="area-field">Select a Area</label>
+        <p-dropdown name="area" [options]="areas" [(ngModel)]="area" (ngModelChange)="onAreaChange($event)"
+            optionLabel="key" [filter]="true" inputId="area-field" filterBy="key" [showClear]="true"
+            placeholder="Select a Controller" autoWidth="false" appendTo="body" [style]="{'width':'100%'}"
+            [disabled]="funcGroup.isUpdate">
+            <ng-template pTemplate="selectedItem" let-selectedOption>
+                <div class="flex align-items-center gap-2">
+                    <div>{{ selectedOption?.key }}</div>
+                </div>
+            </ng-template>
+            <ng-template let-area pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                    <div>{{ area.key }} - {{ area.value }}</div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <!-- Controller -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="controller-field">Select a Controller</label>
+        <p-dropdown name="controller" [options]="controllers" [(ngModel)]="controller"
+            (ngModelChange)="onControllerChange($event)" optionLabel="key" [filter]="true" inputId="controller-field"
+            filterBy="key" [showClear]="true" placeholder="Select a Controller" autoWidth="false" appendTo="body"
+            [style]="{'width':'100%'}" [disabled]="funcGroup.isUpdate">
+            <ng-template pTemplate="selectedItem" let-selectedOption>
+                <div class="flex align-items-center gap-2">
+                    <div>{{ selectedOption?.key }}</div>
+                </div>
+            </ng-template>
+            <ng-template let-controller pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                    <div>{{ controller.key }} - {{ controller.value }}</div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <!-- Title -->
+    <div class="flex flex-column gap-2 col-4 mt-3">
+        <label for="title">Title <span class="required">*</span></label>
+        <input pInputText id="title" name="title" [(ngModel)]="funcGroup.title" [required]="true" />
+    </div>
+
+    <!-- Actions -->
+    <div class="actionDetails grid mt-5">
+        <div class="col-12">
+            <p-table #dt1 [value]="funcGroup.actionDetails" dataKey="id" editMode="row" [rowHover]="true"
+                responsiveLayout="scroll" styleClass="p-datatable-gridlines p-size-normal">
+                <!-- Table thread -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="text-primary">
+                            Action
+                            <p-column field="action"></p-column>
+                        </th>
+                        <th class="text-primary" style="width:40%">
+                            Description
+                            <p-column field="description"></p-column>
+                        </th>
+                        <th class="text-primary" style="width: 6rem">
+                            Sequence
+                            <p-column field="seq"></p-column>
+                        </th>
+                        <th class="text-primary" style="width: 6rem">
+                            Is Show
+                            <p-column field="isShow"></p-column>
+                        </th>
+                        <th class="text-primary" style="width: 6rem">
+                            Is Menu
+                            <p-column field="isMenu"></p-column>
+                        </th>
+                        <th style="width:10%" class="text-center">
+                            <button pButton pRipple class="p-button-rounded p-button-outlined text-green-500"
+                                icon="pi pi-plus" (click)="addRow(dt1)" [disabled]="!funcGroup.title || disabled">
+                            </button>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <!-- Table body -->
+                <ng-template pTemplate="body" let-item let-editing="editing" let-ri="rowIndex">
+                    <tr [pEditableRow]="item">
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-dropdown [name]="'action_' + item.seq" [options]="actions" [(ngModel)]="item.selection"
+                                        (ngModelChange)="onActionChange($event, item)" optionLabel="key" [filter]="true"
+                                        inputId="action-field" filterBy="key" [showClear]="true"
+                                        placeholder="Select a Action" autoWidth="false" appendTo="body"
+                                        [style]="{'width':'100%'}" [disabled]="!item.isNew">
+                                        <ng-template pTemplate="selectedItem" let-selectedOption>
+                                            <div class="flex align-items-center gap-2">
+                                                <div>{{ selectedOption?.key }}</div>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template let-action pTemplate="item">
+                                            <div class="flex align-items-center gap-2">
+                                                <div>{{ action.key }} - {{ action.value }}</div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.action}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="text" [name]="'description_' + item.seq"
+                                        [(ngModel)]="item.description" required>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.description}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input pInputText type="number" [name]="'seq_' + item.seq" [(ngModel)]="item.seq"
+                                        required>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.seq}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-checkbox [name]="'isShow_' + item.seq" [(ngModel)]="item.isShow" [binary]="true"
+                                        [inputId]="'isShow_' + item.seq">
+                                    </p-checkbox>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <p-checkbox [name]="'isShow_out_' + item.seq" [(ngModel)]="item.isShow" [binary]="true"
+                                        [inputId]="'isShow_out_' + item.seq" disabled>
+                                    </p-checkbox>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-checkbox [name]="'isMenu_' + item.seq" [(ngModel)]="item.isMenu" [binary]="true"
+                                        [inputId]="'isMenu_' + item.seq">
+                                    </p-checkbox>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    <p-checkbox [name]="'isMenu_out_' + item.seq" [(ngModel)]="item.isMenu" [binary]="true"
+                                        [inputId]="'isMenu_out_' + item.seq" disabled>
+                                    </p-checkbox>
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button *ngIf="!editing" pButton pRipple type="button" (click)="editRow(dt1, item)"
+                                    icon="pi pi-pencil" class="p-button-rounded p-button-text text-yellow-500"
+                                    [disabled]="disabled">
+                                </button>
+                                <button *ngIf="!editing" pButton pRipple type="button" (click)="deleteRow(item)"
+                                    icon="pi pi-trash" class="p-button-rounded p-button-text text-red-500"
+                                    [disabled]="disabled">
+                                </button>
+                                <button *ngIf="editing" pButton pRipple type="button" (click)="saveRow(dt1, item)"
+                                    icon="pi pi-save" class="p-button-rounded p-button-text p-button-success mr-2"
+                                    [disabled]="!item.description">
+                                </button>
+                                <button *ngIf="editing" pButton pRipple type="button" (click)="cancel(dt1, item)"
+                                    icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger">
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Data not found -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="100%" class="text-center text-orange-300">No data found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</form>
+
+<div class="flex align-items-center justify-content-end gap-2 mt-5">
+    <button pButton icon="pi pi-save" class="p-button-success p-button-outlined" (click)="save(functionForm)"
+        label="Lưu" [disabled]="functionForm.invalid || disabled">
+    </button>
+    <button pButton icon="pi pi-times" class="p-button-danger p-button-outlined" (click)="close(functionForm)"
+        label="Hủy" [disabled]="functionForm.invalid || disabled">
+    </button>
+</div>
