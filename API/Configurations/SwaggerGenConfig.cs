@@ -31,7 +31,7 @@ namespace API.Configurations
                         Array.Empty<string>()
                     }
                 });
-                c.CustomSchemaIds(type => type.ToString());
+                c.CustomSchemaIds(type => type.FullName.Replace("+", "."));
             });
         }
     }

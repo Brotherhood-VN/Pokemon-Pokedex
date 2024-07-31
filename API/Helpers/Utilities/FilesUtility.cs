@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Drawing.Imaging;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -105,13 +107,14 @@ namespace API.Helpers.Utilities
         #endregion
 
         #region ImageHandler
+
         public static async Task<string> ImageHandler(ImageHandlerParam param)
         {
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(param.HtmlValue);
 
             HtmlNodeCollection imageNodes = htmlDoc.DocumentNode.SelectNodes("//img");
-            if (!imageNodes.Any())
+            if (imageNodes is not null)
                 return param.HtmlValue;
 
             foreach (var node in imageNodes)
@@ -129,12 +132,86 @@ namespace API.Helpers.Utilities
             return newHtml;
         }
 
+        public static async Task<string> ImageHandlerFromHtmlTemplate(string filePath, string imageFolder = "")
+        {
+            var htmlValue = File.ReadAllText(filePath);
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlValue);
+
+            HtmlNodeCollection imageNodes = htmlDoc.DocumentNode.SelectNodes("//img");
+            if (imageNodes is not null)
+                return filePath;
+
+            foreach (var node in imageNodes)
+            {
+                var image = node.Attributes["src"].Value;
+                if (!string.IsNullOrEmpty(imageFolder))
+                    image = $"{imageFolder}/{image}";
+
+                string imageConvert = await ImageToBase64(image);
+                node.SetAttributeValue("src", imageConvert);
+            }
+
+            var newHtml = htmlDoc.DocumentNode.WriteTo();
+            return newHtml;
+        }
+
         public class ImageHandlerParam
         {
             public string HtmlValue { get; set; }
             public string ApiUrl { get; set; }
             public string SubFolder { get; set; }
             public string RawFileName { get; set; }
+        }
+        #endregion
+
+        #region ImageToBase64
+        public static async Task<string> ImageToBase64(string url, int targetWidth = 88)
+        {
+            HttpClient client = new();
+            byte[] result = await client.GetByteArrayAsync(new Uri(url));
+            // Set width cho ảnh
+            byte[] resizedBytes = ResizeImage(result, targetWidth);
+            return Convert.ToBase64String(resizedBytes);
+        }
+
+        private static byte[] ResizeImage(byte[] imageBytes, int targetWidth)
+        {
+            using MemoryStream ms = new(imageBytes);
+#pragma warning disable CA1416
+            using Image image = Image.FromStream(ms);
+            // Tính toán tỉ lệ
+            int targetHeight = (int)((float)targetWidth / image.Width * image.Height);
+            // Tạo ảnh mới với kích thước mong muốn
+            using Bitmap resizedImage = new(image, new Size(targetWidth, targetHeight));
+            using MemoryStream msResized = new();
+            // Lưu ảnh mới vào MemoryStream
+            resizedImage.Save(msResized, ImageFormat.Png);
+#pragma warning restore CA1416
+            return msResized.ToArray();
+        }
+        #endregion
+
+        #region MakeThumbnail
+        public static byte[] MakeThumbnail(this byte[] myImage, int thumbWidth, int thumbHeight)
+        {
+            using MemoryStream ms = new(myImage);
+#pragma warning disable CA1416
+            using Image thumbnail = Image.FromStream(ms).GetThumbnailImage(thumbWidth, thumbHeight, null, new IntPtr());
+            thumbnail.Save(ms, ImageFormat.Png);
+#pragma warning restore CA1416
+            return ms.ToArray();
+        }
+        #endregion
+
+        #region BitmapToByteArray
+        public static byte[] BitmapToByteArray(this Bitmap bitmap)
+        {
+            using MemoryStream ms = new();
+#pragma warning disable CA1416
+            bitmap.Save(ms, ImageFormat.Png);
+            return ms.ToArray();
         }
         #endregion
 
@@ -244,11 +321,12 @@ namespace API.Helpers.Utilities
         #endregion
 
         #region Download
-        public async static Task<FileContentResult> Download(string filePath)
+        public async static Task<FileContentResult> Download(string filePath, string contentType = "")
         {
             if (!File.Exists(filePath)) return null;
 
-            string fileExtension = GetContentType(filePath);
+            if (string.IsNullOrWhiteSpace(contentType))
+                contentType = GetContentType(filePath);
 
             MemoryStream memory = new();
             await using (var stream = new FileStream(filePath, FileMode.Open))
@@ -257,7 +335,7 @@ namespace API.Helpers.Utilities
             }
             memory.Position = 0;
 
-            return new FileContentResult(memory.ToArray(), fileExtension);
+            return new FileContentResult(memory.ToArray(), contentType);
         }
 
         public static string GetContentType(string path)

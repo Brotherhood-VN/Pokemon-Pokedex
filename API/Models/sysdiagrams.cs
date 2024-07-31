@@ -7,6 +7,7 @@ namespace API.Models
     public partial class sysdiagrams
     {
         [Required]
+        [StringLength(128)]
         public string name { get; set; }
         public int principal_id { get; set; }
         [Key]

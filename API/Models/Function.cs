@@ -15,12 +15,17 @@ namespace API.Models
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(250)]
         public string Area { get; set; }
         [Required]
+        [StringLength(250)]
         public string Controller { get; set; }
         [Required]
+        [StringLength(250)]
         public string Action { get; set; }
+        [StringLength(250)]
         public string Title { get; set; }
+        [StringLength(250)]
         public string Description { get; set; }
         public bool IsShow { get; set; }
         public bool? IsMenu { get; set; }

@@ -10,14 +10,15 @@ namespace API.Models
         {
             Regions = new HashSet<Region>();
             Stats = new HashSet<Stat>();
-            Abilitys = new HashSet<Ability>();
         }
 
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(10)]
         public string Code { get; set; }
         [Required]
+        [StringLength(100)]
         public string Title { get; set; }
         public string Description { get; set; }
         public bool Status { get; set; }
@@ -32,7 +33,5 @@ namespace API.Models
         public virtual ICollection<Region> Regions { get; set; }
         [InverseProperty("Area")]
         public virtual ICollection<Stat> Stats { get; set; }
-        [InverseProperty("Area")]
-        public virtual ICollection<Ability> Abilitys { get; set; }
     }
 }

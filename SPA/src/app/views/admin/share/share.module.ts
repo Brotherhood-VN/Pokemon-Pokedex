@@ -21,10 +21,14 @@ import { QuillEditorComponent } from './quill-editor/quill-editor.component';
 
 const controllers: string[] = [
   "AccountType",
-  "Classification",
+  "Area",
   "Condition",
+  "GameVersion",
   "Gender",
   "Generation",
+  "Item",
+  "Rank",
+  "StatType",
   "Stone",
 ]
 let providers: Provider[] = [];

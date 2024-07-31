@@ -27,6 +27,7 @@ namespace API._Services.Implementations.Systems
                 Code = dto.Code,
                 Title = dto.Title,
                 Description = dto.Description,
+                Icon = dto.Icon,
                 CreateBy = dto.CreateBy,
                 CreateTime = dto.CreateTime,
                 IsDelete = false,
@@ -86,6 +87,7 @@ namespace API._Services.Implementations.Systems
                     Code = x.Code,
                     Title = x.Title,
                     Description = x.Description,
+                    Icon = x.Icon,
                     Status = x.Status,
                     UpdateTime = x.UpdateTime ?? x.CreateTime
                 }).OrderByDescending(x => x.UpdateTime).AsNoTracking();
@@ -105,6 +107,7 @@ namespace API._Services.Implementations.Systems
                 Code = data.Code,
                 Title = data.Title,
                 Description = data.Description,
+                Icon = data.Icon,
                 IsDelete = data.IsDelete,
                 Status = data.Status,
                 CreateBy = data.CreateBy,
@@ -135,6 +138,7 @@ namespace API._Services.Implementations.Systems
 
             data.Title = dto.Title;
             data.Description = dto.Description;
+            data.Icon = dto.Icon;
             data.Status = dto.Status;
             data.UpdateBy = dto.UpdateBy;
             data.UpdateTime = dto.UpdateTime;

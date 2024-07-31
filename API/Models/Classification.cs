@@ -8,16 +8,20 @@ namespace API.Models
     {
         public Classification()
         {
-            PokemonClasss = new HashSet<PokemonClass>();
+            PokemonClasses = new HashSet<PokemonClass>();
         }
 
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(10)]
         public string Code { get; set; }
         [Required]
+        [StringLength(100)]
         public string Title { get; set; }
         public string Description { get; set; }
+        [StringLength(500)]
+        public string Icon { get; set; }
         public bool Status { get; set; }
         public bool IsDelete { get; set; }
         public long CreateBy { get; set; }
@@ -27,6 +31,6 @@ namespace API.Models
         [Column(TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
         [InverseProperty("Classification")]
-        public virtual ICollection<PokemonClass> PokemonClasss { get; set; }
+        public virtual ICollection<PokemonClass> PokemonClasses { get; set; }
     }
 }

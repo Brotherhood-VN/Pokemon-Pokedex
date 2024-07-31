@@ -15,8 +15,10 @@ namespace API.Models
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(10)]
         public string Code { get; set; }
         [Required]
+        [StringLength(100)]
         public string Title { get; set; }
         public string Description { get; set; }
         public bool Status { get; set; }

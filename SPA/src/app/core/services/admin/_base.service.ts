@@ -10,11 +10,11 @@ export interface IBaseService<T> {
 
   update(model: T): Observable<OperationResult>;
 
-  delete(id: any): Observable<OperationResult>;
+  delete(model: T): Observable<OperationResult>;
 
   getDataPagination(params?: any): Observable<PaginationResult<T>>;
 
-  getDetail(id: any): Observable<T>;
+  getDetail(id: string): Observable<T>;
 }
 
 @Injectable({

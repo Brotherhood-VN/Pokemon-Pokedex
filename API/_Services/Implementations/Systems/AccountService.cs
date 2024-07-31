@@ -37,7 +37,8 @@ namespace API._Services.Implementations.Systems
                     CreateBy = dto.CreateBy,
                     CreateTime = dto.CreateTime,
                     IsDelete = false,
-                    Status = true
+                    Status = true,
+                    AccountTypeId = dto.AccountTypeId
                 };
                 _context.Account.Add(data);
                 await _context.SaveChangesAsync();

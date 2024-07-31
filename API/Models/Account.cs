@@ -15,8 +15,10 @@ namespace API.Models
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(1000)]
         public string UserName { get; set; }
         [Required]
+        [StringLength(1000)]
         public string Password { get; set; }
         public bool? Status { get; set; }
         public bool? IsDelete { get; set; }

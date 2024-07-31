@@ -6,10 +6,14 @@ import { Menu } from '@models/admins/menu';
 
 const controllers: string[] = [
   "AccountType",
-  "Classification",
+  "Area",
   "Condition",
+  "GameVersion",
   "Gender",
   "Generation",
+  "Item",
+  "Rank",
+  "StatType",
   "Stone",
 ]
 

@@ -1,24 +1,20 @@
 import { Menu } from '@models/admins/menu';
 
 export interface Auth {
-    accountId: string;
+    accountId: number;
     avartar: string;
     type: string;
     fullName: string;
-    position: string;
-    branchId: string | null;
 }
 
 export interface UserForLoginParam {
     username: string;
     password: string;
-    branchId: string | null;
     rememberMe: boolean;
 }
 
 export interface TokenRequestParam {
     token: string;
-    branchId: string | null;
 }
 
 export interface UserReturned {

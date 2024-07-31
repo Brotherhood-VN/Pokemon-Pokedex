@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BaseModel } from '@models/admins/base-model';
 import { BaseService } from './_base.service';
 import { KeyValuePair } from '@utilities/key-value-utility';
+import { Classification } from '@models/admins/classification';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClassificationService extends BaseService<BaseModel> {
+export class ClassificationService extends BaseService<Classification> {
   
   constructor() {
     super("Classification");

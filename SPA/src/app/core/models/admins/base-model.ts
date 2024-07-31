@@ -1,12 +1,12 @@
 export interface BaseModel {
-    id: string;
+    id: number;
     code: string;
     title: string;
     description: string;
     status: boolean;
     isDelete: boolean;
-    createBy: string;
+    createBy: number;
     createTime: string | Date;
-    updateBy: string;
+    updateBy: number | number;
     updateTime: string | null | Date;
 }

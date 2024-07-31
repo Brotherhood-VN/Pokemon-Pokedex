@@ -1,5 +1,5 @@
 export interface Account {
-    id: string;
+    id: number;
     userName: string;
     password: string;
     status: boolean | null;
@@ -14,7 +14,7 @@ export interface Account {
 }
 
 export interface AccountChangePassword {
-    id: string;
+    id: number;
     password: string;
     newPassword: string;
     confirmPassword: string;

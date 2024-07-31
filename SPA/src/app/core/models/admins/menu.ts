@@ -1,5 +1,5 @@
 export interface Menu {
-    id: string;
+    id: number;
     controller: string;
     label: string;
     icon: string;
@@ -12,6 +12,6 @@ export interface Menu {
     title: string;
     class: string;
     seq: number;
-    parentId: string | null;
+    parentId: number | null;
     items: Menu[];
 }

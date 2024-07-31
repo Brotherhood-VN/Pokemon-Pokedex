@@ -2,7 +2,6 @@ using System.Reflection;
 using API._Services.Interfaces.Systems;
 using API.Data;
 using API.Dtos.Systems;
-using API.Helpers.Constants;
 using API.Models;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
@@ -89,15 +88,14 @@ namespace API._Services.Implementations.Systems
         #region CreateAllFunction
         public async Task<OperationResult> CreateAllFunction(long userId, string controller = "")
         {
-            var predicate = PredicateBuilder.New<MethodInfo>(m => !m.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), true).Any());
-            predicate.And(x => x.DeclaringType.FullName.Contains("Systems") && !x.Name.StartsWith("GetList") && !x.Name.StartsWith("GetAll"));
+            var predicate = PredicateBuilder.New<MethodInfo>(x => x.GetCustomAttributes<MenuMemberAttribute>(true).Any());
             if (!string.IsNullOrWhiteSpace(controller))
                 predicate.And(x => x.DeclaringType.Name.Contains(controller));
 
             Assembly asm = Assembly.GetExecutingAssembly();
 
             var controlleractionlist = asm.GetTypes()
-                .Where(type => typeof(ControllerBase).IsAssignableFrom(type))
+                .Where(type => typeof(ControllerBase).IsAssignableFrom(type) && type.GetCustomAttributes(typeof(IsMenuAttribute), true).Any())
                 .SelectMany(type => type.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
                 .Where(predicate)
                 .Select(
@@ -105,7 +103,8 @@ namespace API._Services.Implementations.Systems
                     {
                         Area = x.DeclaringType.FullName.Split(".")[2],
                         Controller = x.DeclaringType.Name.Replace("Controller", ""),
-                        Action = x.Name
+                        Action = x.Name,
+                        x.GetCustomAttribute<MenuMemberAttribute>(true).Seq
                     })
                 .OrderBy(x => x.Controller).ThenBy(x => x.Action).ToList();
 
@@ -113,21 +112,21 @@ namespace API._Services.Implementations.Systems
             {
                 Area = "Systems",
                 Controller = "Dashboard",
-                Action = "Dashboard"
+                Action = "Dashboard",
+                Seq = 1
             });
 
-            List<string> menuSystems = FunctionConstains.Menus;
+            List<Function> olds = await _context.Function.ToListAsync();
 
             List<Function> functions = new();
             List<Function> functionUpdates = new();
             foreach (var item in controlleractionlist)
             {
-                int seq = GetSeq(item.Action);
-                var function = await _context.Function.FirstOrDefaultAsync(x => x.Area == item.Area && x.Controller == item.Controller && x.Action == item.Action);
+                var function = olds.FirstOrDefault(x => x.Area == item.Area && x.Controller == item.Controller && x.Action == item.Action);
                 if (function != null)
                 {
-                    function.IsMenu = menuSystems.Any(x => x == item.Controller) && seq == 1;
-                    function.Seq = seq;
+                    function.IsMenu = item.Seq == 1;
+                    function.Seq = item.Seq;
                     function.UpdateBy = userId;
                     function.UpdateTime = DateTime.Now;
                     functionUpdates.Add(function);
@@ -143,9 +142,9 @@ namespace API._Services.Implementations.Systems
                             CreateBy = userId,
                             CreateTime = DateTime.Now,
                             IsShow = true,
-                            IsMenu = menuSystems.Any(x => x == item.Controller) && seq == 1,
+                            IsMenu = item.Seq == 1,
                             IsDelete = false,
-                            Seq = seq,
+                            Seq = item.Seq,
                             Title = TranslateUtility.TranslateText(item.Controller),
                             Description = TranslateUtility.TranslateText(item.Action)
                         }
@@ -169,21 +168,6 @@ namespace API._Services.Implementations.Systems
                 await _transaction.RollbackAsync();
                 return new OperationResult { IsSuccess = false, Message = ex.Message };
             }
-        }
-
-        private static int GetSeq(string action)
-        {
-            return action switch
-            {
-                "GetDataPagination" => 1,
-                "LoadMenus" => 1,
-                "Dashboard" => 1,
-                "Create" => 2,
-                "Update" => 3,
-                "Delete" => 4,
-                "GetDetail" => 5,
-                _ => 6
-            };
         }
         #endregion
 

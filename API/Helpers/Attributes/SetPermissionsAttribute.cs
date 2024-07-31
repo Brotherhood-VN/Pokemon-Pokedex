@@ -7,10 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Helpers.Attributes
 {
-    public class SetPermissionsAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class SetPermissionsAttribute : Attribute, IAuthorizationFilter
     {
-        public readonly string controller;
-        public readonly string action;
+        private readonly string controller;
+        private readonly string action;
 
         public SetPermissionsAttribute(string _controller, string _action)
         {

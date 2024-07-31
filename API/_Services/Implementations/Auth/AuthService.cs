@@ -4,6 +4,7 @@ using API.Dtos;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 using LinqKit;
+using API.Dtos.Systems;
 
 namespace API._Services.Implementations.Auth
 {
@@ -206,68 +207,70 @@ namespace API._Services.Implementations.Auth
         /// <param name="roleIds">roleIds là các nhóm quyền của tài khoản đó</param>
         /// <param name="accountId">accountId đang đăng nhập</param>
         /// <returns>Trả về danh sách quyền</returns>
-        // public async Task<List<RoleUser>> GetRoles(RoleUserParams param)
-        // {
-        //     var functions = await _context.Function.Where(x => !x.Controller.Contains("Auth"))
-        //         .Include(x => x.RoleFunctions)
-        //         .Include(x => x.AccountFunctions)
-        //         .OrderBy(x => x.Area).ThenBy(x => x.Controller).ThenBy(x => x.Action)
-        //         .AsNoTracking().ToListAsync();
+        public async Task<List<RoleUser>> GetRoles(RoleUserParams param)
+        {
+            var functions = await _context.Function.Where(x => !x.Controller.Contains("Auth"))
+                .Include(x => x.RoleFunctions)
+                .Include(x => x.AccountFunctions)
+                .OrderBy(x => x.Area).ThenBy(x => x.Controller).ThenBy(x => x.Action)
+                .AsNoTracking().ToListAsync();
 
-        //     if (!param.CheckedAll)
-        //     {
-        //         List<Function> funcByRoles = new();
-        //         List<Function> funcByAccountId = new();
-        //         if (param.RoleIds != null)
-        //             funcByRoles = functions.Where(x => x.RoleFunctions.Where(x => param.RoleIds.Contains(x.RoleId)).Any()).ToList();
-        //         if (param.AccountId != null)
-        //         {
-        //             funcByAccountId = functions.Where(x => x.AccountFunctions.Where(x => x.AccountId == param.AccountId).Any()).ToList();
-        //         }
+            if (!param.CheckedAll)
+            {
+                List<Function> funcByRoles = new();
+                List<Function> funcByAccountId = new();
+                if (param.RoleIds != null)
+                    funcByRoles = functions.Where(x => x.RoleFunctions.Where(x => param.RoleIds.Contains(x.RoleId)).Any()).ToList();
+                if (param.AccountId != null)
+                {
+                    funcByAccountId = functions.Where(x => x.AccountFunctions.Where(x => x.AccountId == param.AccountId).Any()).ToList();
+                }
 
-        //         functions = funcByRoles.Union(funcByAccountId).DistinctBy(x => x.Id).ToList();
-        //     }
+                functions = funcByRoles.Union(funcByAccountId).DistinctBy(x => x.Id).ToList();
+            }
 
-        //     List<RoleUser> roles = new();
-        //     var funcGroup = functions.GroupBy(x => x.Controller).ToList();
-        //     foreach (var con in funcGroup)
-        //     {
-        //         Guid id = Guid.NewGuid();
-        //         var func = functions.Where(x => x.Controller == con.Key).ToList();
-        //         List<SubRoleUser> actions = new();
-        //         foreach (var act in func)
-        //         {
-        //             var item = new SubRoleUser
-        //             {
-        //                 Action = act.Action,
-        //                 Area = act.Area,
-        //                 Controller = act.Controller,
-        //                 Id = act.Id,
-        //                 ParentId = id,
-        //                 Title = act.Title,
-        //                 Seq = act.Seq,
-        //                 IsChecked = act.RoleFunctions.Any(x => x.FunctionId == act.Id && param.RoleIds.Contains(x.RoleId)) ||
-        //                             act.AccountFunctions.Any(x => x.FunctionId == act.Id && x.AccountId == param.AccountId),
-        //                 IsDisabled = act.RoleFunctions.Any(x => x.FunctionId == act.Id && param.RoleIds.Contains(x.RoleId))
-        //             };
-        //             actions.Add(item);
-        //         }
+            List<RoleUser> roles = new();
+            var funcGroup = functions.GroupBy(x => x.Controller).ToList();
 
-        //         RoleUser role = new()
-        //         {
-        //             Id = id,
-        //             Controller = con.Key,
-        //             Title = func[0].Title,
-        //             Actions = actions.OrderBy(x => x.Seq).ToList(),
-        //             IsChecked = actions.Count(x => x.IsChecked) == func.Count,
-        //             IsDisabled = actions.Count(x => x.IsDisabled) == func.Count
-        //         };
+            long index = 0;
+            foreach (var con in funcGroup)
+            {
+                var func = functions.Where(x => x.Controller == con.Key).ToList();
+                List<SubRoleUser> actions = new();
+                foreach (var act in func)
+                {
+                    var item = new SubRoleUser
+                    {
+                        Action = act.Action,
+                        Area = act.Area,
+                        Controller = act.Controller,
+                        Id = act.Id,
+                        ParentId = index,
+                        Title = act.Title,
+                        Seq = act.Seq,
+                        IsChecked = act.RoleFunctions.Any(x => x.FunctionId == act.Id && param.RoleIds.Contains(x.RoleId)) ||
+                                    act.AccountFunctions.Any(x => x.FunctionId == act.Id && x.AccountId == param.AccountId),
+                        IsDisabled = act.RoleFunctions.Any(x => x.FunctionId == act.Id && param.RoleIds.Contains(x.RoleId))
+                    };
+                    actions.Add(item);
+                }
 
-        //         roles.Add(role);
-        //     }
+                RoleUser role = new()
+                {
+                    Id = index,
+                    Controller = con.Key,
+                    Title = func[0].Title,
+                    Actions = actions.OrderBy(x => x.Seq).ToList(),
+                    IsChecked = actions.Count(x => x.IsChecked) == func.Count,
+                    IsDisabled = actions.Count(x => x.IsDisabled) == func.Count
+                };
 
-        //     return roles;
-        // }
+                index++;
+                roles.Add(role);
+            }
+
+            return roles;
+        }
         #endregion
 
         #region 
@@ -277,97 +280,96 @@ namespace API._Services.Implementations.Auth
         /// <param name="accountId">Tài khoản đang đăng nhập</param>
         /// <param name="controller">Controller cần kiểm tra các quyền</param>
         /// <returns>Trả về danh sách các quyền của menu đó</returns>
-        // public async Task<List<RoleAuth>> GetRoleByMenu(long accountId, string controller = "")
-        // {
-        //     var accountRoles = await _context.AccountRole.Where(x => x.AccountId == accountId).Select(x => x.RoleId).Distinct().ToListAsync();
-        //     var roles = await _context.Role.Where(x => accountRoles.Contains(x.Id)).Select(x => x.Id).ToListAsync();
+        public async Task<List<RoleAuth>> GetRoleByMenu(long accountId, string controller = "")
+        {
+            var accountRoles = await _context.AccountRole.Where(x => x.AccountId == accountId).Select(x => x.RoleId).Distinct().ToListAsync();
+            var roles = await _context.Role.Where(x => accountRoles.Contains(x.Id)).Select(x => x.Id).ToListAsync();
 
-        //     var predicateRole = PredicateBuilder.New<RoleFunction>(x => roles.Contains(x.RoleId));
-        //     var predicateAccount = PredicateBuilder.New<AccountFunction>(x => x.AccountId == accountId);
+            var predicateRole = PredicateBuilder.New<RoleFunction>(x => roles.Contains(x.RoleId));
+            var predicateAccount = PredicateBuilder.New<AccountFunction>(x => x.AccountId == accountId);
 
-        //     if (!string.IsNullOrWhiteSpace(controller))
-        //     {
-        //         predicateRole.And(x => x.Function.Controller == controller);
-        //         predicateAccount.And(x => x.Function.Controller == controller);
-        //     }
+            if (!string.IsNullOrWhiteSpace(controller))
+            {
+                predicateRole.And(x => x.Function.Controller == controller);
+                predicateAccount.And(x => x.Function.Controller == controller);
+            }
 
-        //     var roleFunctions = await _context.RoleFunction
-        //         .Include(x => x.Function)
-        //         .Where(predicateRole)
-        //         .Select(x => x.Function)
-        //         .AsNoTracking().ToListAsync();
+            var roleFunctions = await _context.RoleFunction
+                .Include(x => x.Function)
+                .Where(predicateRole)
+                .Select(x => x.Function)
+                .AsNoTracking().ToListAsync();
 
-        //     var accountFunctions = await _context.AccountFunction
-        //         .Include(x => x.Function)
-        //         .Where(predicateAccount)
-        //         .Select(x => x.Function)
-        //         .AsNoTracking().ToListAsync();
+            var accountFunctions = await _context.AccountFunction
+                .Include(x => x.Function)
+                .Where(predicateAccount)
+                .Select(x => x.Function)
+                .AsNoTracking().ToListAsync();
 
-        //     List<RoleAuth> results = roleFunctions.Union(accountFunctions)
-        //         .Select(x => new RoleAuth
-        //         {
-        //             Id = x.Id,
-        //             Area = x.Area,
-        //             Controller = x.Controller,
-        //             Action = x.Action,
-        //             Title = x.Title,
-        //             IsShow = x.IsShow,
-        //             IsActive = true
-        //         })
-        //         .OrderBy(x => x.Area).ThenBy(x => x.Controller).ThenBy(x => x.Action)
-        //         .Distinct().ToList();
+            List<RoleAuth> results = roleFunctions.Union(accountFunctions)
+                .Select(x => new RoleAuth
+                {
+                    Id = x.Id,
+                    Area = x.Area,
+                    Controller = x.Controller,
+                    Action = x.Action,
+                    Title = x.Title,
+                    IsActive = true
+                })
+                .OrderBy(x => x.Area).ThenBy(x => x.Controller).ThenBy(x => x.Action)
+                .Distinct().ToList();
 
-        //     return results;
-        // }
+            return results;
+        }
         #endregion
 
         #region GetMenus
-        // private async Task<List<MenuDto>> GetMenus(Guid accountId)
-        // {
-        //     var roles = await GetRoleByMenu(accountId);
-        //     var controllers = roles.Select(x => x.Controller).Distinct().ToList();
+        private async Task<List<MenuDto>> GetMenus(long accountId)
+        {
+            var roles = await GetRoleByMenu(accountId);
+            var controllers = roles.Select(x => x.Controller).Distinct().ToList();
 
-        //     var menus = await _context.Menu
-        //         .Where(x => string.IsNullOrWhiteSpace(x.Controller) || controllers.Contains(x.Controller))
-        //         .Select(x => new MenuDto
-        //         {
-        //             Id = x.Id,
-        //             Badge = x.Badge,
-        //             Controller = x.Controller,
-        //             Class = x.Class,
-        //             Label = x.Label,
-        //             RouterLink = x.RouterLink,
-        //             Separator = x.Separator,
-        //             Target = x.Target,
-        //             Visible = x.Visible,
-        //             Icon = x.Icon,
-        //             Title = x.Title,
-        //             Url = x.Url,
-        //             ParentId = x.ParentId,
-        //             Seq = x.Seq
-        //         }).AsNoTracking().ToListAsync();
+            var menus = await _context.Menu
+                .Where(x => string.IsNullOrWhiteSpace(x.Controller) || controllers.Contains(x.Controller))
+                .Select(x => new MenuDto
+                {
+                    Id = x.Id,
+                    Badge = x.Badge,
+                    Controller = x.Controller,
+                    Class = x.Class,
+                    Label = x.Label,
+                    RouterLink = x.RouterLink,
+                    Separator = x.Separator,
+                    Target = x.Target,
+                    Visible = x.Visible,
+                    Icon = x.Icon,
+                    Title = x.Title,
+                    Url = x.Url,
+                    ParentId = x.ParentId,
+                    Seq = x.Seq
+                }).AsNoTracking().ToListAsync();
 
-        //     List<MenuDto> datas = menus
-        //         .Where(x => !x.ParentId.HasValue)
-        //         .Select(x =>
-        //         {
-        //             x.Items = GetChildren(menus, x.Id);
-        //             return x;
-        //         }).OrderBy(x => x.Seq).ToList();
+            List<MenuDto> datas = menus
+                .Where(x => !x.ParentId.HasValue)
+                .Select(x =>
+                {
+                    x.Items = GetChildren(menus, x.Id);
+                    return x;
+                }).OrderBy(x => x.Seq).ToList();
 
-        //     return datas.Where(x => !x.ParentId.HasValue && x.Items.Any()).ToList();
-        // }
+            return datas.Where(x => !x.ParentId.HasValue && x.Items.Any()).ToList();
+        }
 
-        // private static List<MenuDto> GetChildren(List<MenuDto> menus, Guid parentId)
-        // {
-        //     return menus
-        //         .Where(x => x.ParentId == parentId)
-        //         .Select(x =>
-        //         {
-        //             x.Items = GetChildren(menus, x.Id);
-        //             return x;
-        //         }).OrderBy(x => x.Seq).ToList();
-        // }
-        #endregion
+        private static List<MenuDto> GetChildren(List<MenuDto> menus, long parentId)
+        {
+            return menus
+                .Where(x => x.ParentId == parentId)
+                .Select(x =>
+                {
+                    x.Items = GetChildren(menus, x.Id);
+                    return x;
+                }).OrderBy(x => x.Seq).ToList();
+        }
+        #endregion    
     }
 }

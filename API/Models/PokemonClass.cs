@@ -11,11 +11,11 @@ namespace API.Models
         public long PokemonId { get; set; }
         public long ClassificationId { get; set; }
         public bool IsDefault { get; set; }
-        [ForeignKey("PokemonId")]
-        [InverseProperty("PokemonClasss")]
-        public virtual Pokemon Pokemon { get; set; }
         [ForeignKey("ClassificationId")]
-        [InverseProperty("PokemonClasss")]
+        [InverseProperty("PokemonClasses")]
         public virtual Classification Classification { get; set; }
+        [ForeignKey("PokemonId")]
+        [InverseProperty("PokemonClasses")]
+        public virtual Pokemon Pokemon { get; set; }
     }
 }

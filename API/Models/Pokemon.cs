@@ -8,23 +8,31 @@ namespace API.Models
     {
         public Pokemon()
         {
-            PokemonSkills = new HashSet<PokemonSkill>();
-            Abilitys = new HashSet<Ability>();
-            Stats = new HashSet<Stat>();
-            PokemonClasss = new HashSet<PokemonClass>();
-            PokemonGens = new HashSet<PokemonGen>();
+            PokemonAbilities = new HashSet<PokemonAbility>();
             Againsts = new HashSet<Against>();
+            PokemonGameVersions = new HashSet<PokemonGameVersion>();
+            PokemonGens = new HashSet<PokemonGen>();
+            PokemonClasses = new HashSet<PokemonClass>();
+            PokemonSkills = new HashSet<PokemonSkill>();
+            Stats = new HashSet<Stat>();
         }
 
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(50)]
         public string Index { get; set; }
         [Required]
+        [StringLength(100)]
         public string FullName { get; set; }
+        [Column(TypeName = "decimal(7, 2)")]
+        public decimal? Height { get; set; }
+        [Column(TypeName = "decimal(7, 2)")]
+        public decimal? Weight { get; set; }
         public string Description { get; set; }
         public string Story { get; set; }
         public string Note { get; set; }
+        [StringLength(50)]
         public string BeforeIndex { get; set; }
         public long? RankId { get; set; }
         public long? ConditionId { get; set; }
@@ -45,16 +53,18 @@ namespace API.Models
         [InverseProperty("Pokemons")]
         public virtual Rank Rank { get; set; }
         [InverseProperty("Pokemon")]
-        public virtual ICollection<PokemonSkill> PokemonSkills { get; set; }
+        public virtual ICollection<PokemonAbility> PokemonAbilities { get; set; }
         [InverseProperty("Pokemon")]
-        public virtual ICollection<Ability> Abilitys { get; set; }
+        public virtual ICollection<Against> Againsts { get; set; }
         [InverseProperty("Pokemon")]
-        public virtual ICollection<Stat> Stats { get; set; }
-        [InverseProperty("Pokemon")]
-        public virtual ICollection<PokemonClass> PokemonClasss { get; set; }
+        public virtual ICollection<PokemonGameVersion> PokemonGameVersions { get; set; }
         [InverseProperty("Pokemon")]
         public virtual ICollection<PokemonGen> PokemonGens { get; set; }
         [InverseProperty("Pokemon")]
-        public virtual ICollection<Against> Againsts { get; set; }
+        public virtual ICollection<PokemonClass> PokemonClasses { get; set; }
+        [InverseProperty("Pokemon")]
+        public virtual ICollection<PokemonSkill> PokemonSkills { get; set; }
+        [InverseProperty("Pokemon")]
+        public virtual ICollection<Stat> Stats { get; set; }
     }
 }

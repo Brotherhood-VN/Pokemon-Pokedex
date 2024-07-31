@@ -1,3 +1,4 @@
+using System.Net;
 using API._Services.Interfaces.Auth;
 using API._Services.Interfaces.Systems;
 using API.Dtos.Systems;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Systems
 {
+    [IsMenu]
     public class RoleController : ApiController
     {
         private readonly IRoleService _service;
@@ -19,6 +21,8 @@ namespace API.Controllers.Systems
         }
 
         [HttpPost("Create")]
+        [ProducesResponseType(typeof(OperationResult), (int)HttpStatusCode.OK)]
+        [MenuMember(2)]
         public async Task<IActionResult> Create([FromBody] RoleDto dto)
         {
             dto.CreateBy = UserId;
@@ -27,6 +31,8 @@ namespace API.Controllers.Systems
         }
 
         [HttpPut("Update")]
+        [ProducesResponseType(typeof(OperationResult), (int)HttpStatusCode.OK)]
+        [MenuMember(3)]
         public async Task<IActionResult> Update([FromBody] RoleDto dto)
         {
             dto.UpdateBy = UserId;
@@ -35,6 +41,8 @@ namespace API.Controllers.Systems
         }
 
         [HttpPut("Delete")]
+        [ProducesResponseType(typeof(OperationResult), (int)HttpStatusCode.OK)]
+        [MenuMember(4)]
         public async Task<IActionResult> Delete([FromBody] RoleDto dto)
         {
             dto.UpdateBy = UserId;
@@ -43,12 +51,15 @@ namespace API.Controllers.Systems
         }
 
         [HttpGet("GetDataPagination")]
+        [ProducesResponseType(typeof(PaginationUtility<RoleDto>), (int)HttpStatusCode.OK)]
+        [MenuMember(1)]
         public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParam pagination, [FromQuery] string keyword)
         {
             return Ok(await _service.GetDataPagination(pagination, keyword));
         }
 
         [HttpGet("GetListRole")]
+        [ProducesResponseType(typeof(List<KeyValuePair<Guid, string>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetListRole()
         {
             return Ok(await _service.GetListRole());
@@ -60,10 +71,12 @@ namespace API.Controllers.Systems
             return Ok(await _service.GetDetail(id));
         }
 
-        // [HttpGet("GetRoles")]
-        // public async Task<IActionResult> GetRoles([FromQuery] RoleUserParams param)
-        // {
-        //     return Ok(await _authService.GetRoles(param));
-        // }
+        [HttpGet("GetRoles")]
+        [ProducesResponseType(typeof(List<RoleUser>), (int)HttpStatusCode.OK)]
+        [MenuMember(6)]
+        public async Task<IActionResult> GetRoles([FromQuery] RoleUserParams param)
+        {
+            return Ok(await _authService.GetRoles(param));
+        }
     }
 }

@@ -6,16 +6,13 @@ namespace API.Models
     [Table("Gender")]
     public partial class Gender
     {
-        public Gender()
-        {
-            Abilitys = new HashSet<Ability>();
-        }
-
         [Key]
         public long Id { get; set; }
         [Required]
+        [StringLength(10)]
         public string Code { get; set; }
         [Required]
+        [StringLength(100)]
         public string Title { get; set; }
         public string Description { get; set; }
         public bool Status { get; set; }
@@ -26,7 +23,5 @@ namespace API.Models
         public long? UpdateBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
-        [InverseProperty("Gender")]
-        public virtual ICollection<Ability> Abilitys { get; set; }
     }
 }

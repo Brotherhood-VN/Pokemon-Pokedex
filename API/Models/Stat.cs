@@ -16,14 +16,18 @@ namespace API.Models
         public int Speed { get; set; }
         public int SpeedAttack { get; set; }
         public int SpeedDefence { get; set; }
-        [ForeignKey("PokemonId")]
-        [InverseProperty("Stats")]
-        public virtual Pokemon Pokemon { get; set; }
+        public long StatTypeId { get; set; }
         [ForeignKey("AreaId")]
         [InverseProperty("Stats")]
         public virtual Area Area { get; set; }
         [ForeignKey("RegionId")]
         [InverseProperty("Stats")]
         public virtual Region Region { get; set; }
+        [ForeignKey("PokemonId")]
+        [InverseProperty("Stats")]
+        public virtual Pokemon Pokemon { get; set; }
+        [ForeignKey("StatTypeId")]
+        [InverseProperty("Stats")]
+        public virtual StatType StatType { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using API.Dtos;
-using API.Helpers.Attributes;
+using API.Dtos.Systems;
 
 namespace API._Services.Interfaces.Auth
 {
@@ -12,7 +12,7 @@ namespace API._Services.Interfaces.Auth
 
         // --------------------------------------------------------------------- //
 
-        // Task<List<RoleUser>> GetRoles(RoleUserParams param);
-        // Task<List<RoleAuth>> GetRoleByMenu(Guid accountId, string controller = "");
+        Task<List<RoleUser>> GetRoles(RoleUserParams param);
+        Task<List<RoleAuth>> GetRoleByMenu(long accountId, string controller = "");
     }
 }

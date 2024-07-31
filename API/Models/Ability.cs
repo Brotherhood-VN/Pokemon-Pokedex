@@ -6,27 +6,33 @@ namespace API.Models
     [Table("Ability")]
     public partial class Ability
     {
+        public Ability()
+        {
+            PokemonAbilities = new HashSet<PokemonAbility>();
+        }
+
         [Key]
         public long Id { get; set; }
-        public long PokemonId { get; set; }
-        public long? GenderId { get; set; }
-        public long? AreaId { get; set; }
-        public long? RegionId { get; set; }
-        [Column(TypeName = "decimal(7, 2)")]
-        public decimal? Height { get; set; }
-        [Column(TypeName = "decimal(7, 2)")]
-        public decimal? Weight { get; set; }
-        [ForeignKey("PokemonId")]
-        [InverseProperty("Abilitys")]
-        public virtual Pokemon Pokemon { get; set; }
-        [ForeignKey("GenderId")]
-        [InverseProperty("Abilitys")]
-        public virtual Gender Gender { get; set; }
-        [ForeignKey("AreaId")]
-        [InverseProperty("Abilitys")]
-        public virtual Area Area { get; set; }
-        [ForeignKey("RegionId")]
-        [InverseProperty("Abilitys")]
-        public virtual Region Region { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string Code { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Title { get; set; }
+        public string Description { get; set; }
+        [StringLength(500)]
+        public string Effect { get; set; }
+        [StringLength(500)]
+        public string InDepthEffect { get; set; }
+        public bool Status { get; set; }
+        public bool IsDelete { get; set; }
+        public long CreateBy { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime CreateTime { get; set; }
+        public long? UpdateBy { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? UpdateTime { get; set; }
+        [InverseProperty("Ability")]
+        public virtual ICollection<PokemonAbility> PokemonAbilities { get; set; }
     }
 }

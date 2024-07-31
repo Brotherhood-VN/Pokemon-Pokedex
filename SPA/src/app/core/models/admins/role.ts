@@ -1,29 +1,30 @@
 export interface Role {
-    id: string;
+    id: number;
     code: string;
     title: string;
+    description: string;
     status: boolean | null;
     isDelete: boolean | null;
-    createBy: string;
+    createBy: number;
     createTime: string | Date;
-    updateBy: string | null;
+    updateBy: number | null;
     updateTime: string | null | Date;
-    functionIds: string[];
+    functionIds: number[];
 }
 
 export interface RoleAuth {
-    id: string;
+    id: number;
     area: string;
     controller: string;
     action: string;
     title: string;
-    parentId: string | null;
+    parentId: number | null;
     isShow: boolean | null;
     isActive: boolean;
 }
 
 export interface RoleUser {
-    id: string;
+    id: number;
     controller: string;
     title: string;
     isChecked: boolean;
@@ -32,12 +33,12 @@ export interface RoleUser {
 }
 
 export interface SubRoleUser {
-    id: string;
+    id: number;
     area: string;
     controller: string;
     action: string;
     title: string;
-    parentId: string;
+    parentId: number;
     seq: number;
     isChecked: boolean;
     isDisabled: boolean;
@@ -45,6 +46,6 @@ export interface SubRoleUser {
 
 export interface RoleUserParams {
     checkedAll: boolean;
-    roleIds: string[];
-    accountId: string | null;
+    roleIds: number[];
+    accountId: number | null;
 }

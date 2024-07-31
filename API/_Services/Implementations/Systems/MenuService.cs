@@ -252,7 +252,7 @@ namespace API._Services.Implementations.Systems
                         x.Controller,
                         x.Title
                     )
-                ).ToListAsync();
+                ).OrderBy(x => x.Key).ToListAsync();
 
             return result;
         }

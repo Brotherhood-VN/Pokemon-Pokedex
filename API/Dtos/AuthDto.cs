@@ -1,3 +1,5 @@
+using API.Dtos.Systems;
+
 namespace API.Dtos
 {
     public class AuthDto
@@ -26,6 +28,6 @@ namespace API.Dtos
         public string RefreshToken { get; set; }
         public string Area { get; set; }
         public AuthDto User { get; set; }
-        // public List<MenuDto> Menus { get; set; }
+        public List<MenuDto> Menus { get; set; }
     }
 }

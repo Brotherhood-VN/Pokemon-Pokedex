@@ -5,15 +5,15 @@ export interface FunctionView {
     controller: string;
     title: string;
     actionDetails: ActionDetail[];
-    createBy: string;
+    createBy: number;
     createTime: string | Date;
-    updateBy: string | null;
+    updateBy: number | null;
     updateTime: string | null | Date;
     isUpdate?: boolean;
 }
 
 export interface ActionDetail {
-    id: string;
+    id: number;
     action: string;
     description: string;
     isShow: boolean;
@@ -25,7 +25,7 @@ export interface ActionDetail {
 }
 
 export interface Function {
-    id: string;
+    id: number;
     area: string;
     controller: string;
     action: string;
@@ -35,9 +35,9 @@ export interface Function {
     isMenu: boolean | null;
     seq: number | null;
     isDelete: boolean | null;
-    createBy: string;
+    createBy: number;
     createTime: string | Date;
-    updateBy: string | null;
+    updateBy: number | null;
     updateTime: string | null | Date;
     isUpdate?: boolean;
 }
