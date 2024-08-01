@@ -17,8 +17,9 @@ namespace API.Helpers.Utilities
         public static async Task<PaginationUtility<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize = 10, bool isPaging = true)
         {
             var count = await source.CountAsync();
-            if (pageNumber > 1 && (pageNumber - 1) * pageSize >= count - 1)
-                pageNumber -= 1;
+            var cell = (int)Math.Ceiling((decimal)count / pageSize);
+            if (cell < pageNumber)
+                pageNumber = cell == 0 ? pageNumber : cell;
 
             var skip = (pageNumber - 1) * pageSize;
             var items = isPaging ? await source.Skip(skip).Take(pageSize).ToListAsync() : await source.ToListAsync();
@@ -29,8 +30,9 @@ namespace API.Helpers.Utilities
         public static PaginationUtility<T> Create(List<T> source, int pageNumber, int pageSize = 10, bool isPaging = true)
         {
             var count = source.Count;
-            if (pageNumber > 1 && (pageNumber - 1) * pageSize >= count - 1)
-                pageNumber -= 1;
+            var cell = (int)Math.Ceiling((decimal)count / pageSize);
+            if (cell < pageNumber)
+                pageNumber = cell == 0 ? pageNumber : cell;
 
             var skip = (pageNumber - 1) * pageSize;
             var items = isPaging ? source.Skip(skip).Take(pageSize).ToList() : source;
