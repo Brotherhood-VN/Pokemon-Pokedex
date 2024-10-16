@@ -52,12 +52,12 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit(): void {
-    this.contextItems = [
-      { label: 'Chỉnh sửa', icon: 'pi pi-pencil', command: () => this.updateGroup() },
-      { label: 'Xóa', icon: 'pi pi-trash', command: () => this.deleteGroup() },
-      { separator: true },
-      { label: 'Bỏ chọn', icon: 'pi pi-times', command: () => this.closeMenuContext() }
-    ];
+    // this.contextItems = [
+    //   { label: 'Chỉnh sửa', icon: 'pi pi-pencil', command: () => this.updateGroup(this.selectedFunction) },
+    //   { label: 'Xóa', icon: 'pi pi-trash', command: () => this.deleteGroup() },
+    //   { separator: true },
+    //   { label: 'Bỏ chọn', icon: 'pi pi-times', command: () => this.closeMenuContext() }
+    // ];
 
     this.clearSearch();
   }
@@ -132,13 +132,13 @@ export class MainComponent extends InjectBase implements OnInit {
       seq: act.seq,
       isUpdate: true
     }
-
+    console.log(functionGroup)
     this.showForm(func);
   }
 
-  updateGroup() {
-    this.selectedFunction.isUpdate = true;
-    this.showFormGroup(this.selectedFunction);
+  updateGroup(func: FunctionView) {
+    func.isUpdate = true;
+    this.showFormGroup(func);
   }
   //#endregion
 

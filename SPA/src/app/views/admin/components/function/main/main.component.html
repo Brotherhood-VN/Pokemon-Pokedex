@@ -34,6 +34,7 @@
                         <th>Controller</th>
                         <th>Title</th>
                         <th>UpdateTime</th>
+                        <th>Operation</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-func let-expanded="expanded">
@@ -48,6 +49,16 @@
                         <td style="min-width: 8rem;">{{func.controller}}</td>
                         <td style="min-width: 8rem;">{{func.title}}</td>
                         <td style="min-width: 8rem;">{{func.updateTime | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                        <td>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button pButton pRipple type="button" icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-text text-yellow-500" (click)="updateGroup(func)">
+                                </button>
+                                <button pButton pRipple type="button" icon="pi pi-trash"
+                                    class="p-button-rounded p-button-text text-red-500" (click)="delete(func, act)">
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="rowexpansion" let-func>

@@ -71,7 +71,7 @@
                             Is Menu
                             <p-column field="isMenu"></p-column>
                         </th>
-                        <th style="width:10%" class="text-center">
+                        <th *ngIf="!funcGroup.isUpdate" style="width:10%" class="text-center">
                             <button pButton pRipple class="p-button-rounded p-button-outlined text-green-500"
                                 icon="pi pi-plus" (click)="addRow(dt1)" [disabled]="!funcGroup.title || disabled">
                             </button>

@@ -27,9 +27,13 @@
                             Code
                             <p-column field="code"></p-column>
                         </th>
-                        <th class="text-primary" style="width:40%">
+                        <th class="text-primary">
                             Title
                             <p-column field="title"></p-column>
+                        </th>
+                        <th class="text-primary" style="width:40%">
+                            Description
+                            <p-column field="description"></p-column>
                         </th>
                         <th class="text-primary" style="min-width: 10rem">
                             Update Time
@@ -49,7 +53,7 @@
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <input pInputText type="text" [name]="'code_' + ri" [(ngModel)]="item.code"
+                                    <input pInputText type="text" class="input_width" [name]="'code_' + ri" [(ngModel)]="item.code"
                                         disabled>
                                 </ng-template>
                                 <ng-template pTemplate="output">
@@ -60,10 +64,20 @@
                         <td>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <input pInputText type="text" [name]="'title_' + ri" [(ngModel)]="item.title">
+                                    <input pInputText type="text" class="input_width" [name]="'title_' + ri" [(ngModel)]="item.title">
                                 </ng-template>
                                 <ng-template pTemplate="output">
                                     {{item.title}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <textarea  pInputText type="text" class="input_width" [name]="'description_' + ri" [(ngModel)]="item.description"></textarea>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{item.description}}
                                 </ng-template>
                             </p-cellEditor>
                         </td>

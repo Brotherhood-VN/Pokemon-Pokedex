@@ -45,7 +45,7 @@ export class FormComponent extends InjectBase implements OnInit {
   ngOnInit() {
     if (this.id) {
       this.title = 'Chỉnh sửa';
-      this.params.roleIds.push(this.id);
+      // this.params.roleIds.push(this.id);
       this.params.checkedAll = false;
       this.isCreate = false;
 

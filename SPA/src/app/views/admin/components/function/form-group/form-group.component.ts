@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { CaptionConstants, MessageConstants } from '@constants/message.constant';
 import { ActionDetail, FunctionView } from '@models/admins/function';
 import { FunctionService } from '@services/admin/function.service';
+import { FunctionUtility } from '@utilities/function-utility';
 import { InjectBase } from '@utilities/inject-base';
 import { KeyValuePair } from '@utilities/key-value-utility';
 import { OperationResult } from '@utilities/operation-result';
@@ -38,7 +39,6 @@ export class FormGroupComponent extends InjectBase implements OnInit {
 
   ngOnInit(): void {
     this.funcGroup = this._config.data;
-
     this.getListArea();
   }
 
@@ -67,6 +67,7 @@ export class FormGroupComponent extends InjectBase implements OnInit {
       this.funcGroup.area = event.key;
       this.getListController(this.funcGroup.area);
     }
+    console.log(this.funcGroup.area)
   }
 
   getListController(area: string) {
@@ -74,13 +75,13 @@ export class FormGroupComponent extends InjectBase implements OnInit {
     this._functionService.getListController(area)
       .subscribe({
         next: (res) => {
-          this.controllers = res;
-
+          this.controllers = res; 
           if (this.funcGroup.controller)
             this.controller = this.controllers.find(x => x.key == this.funcGroup.controller);
 
           if (this.controller)
             this.getListAction(this.funcGroup.area, this.funcGroup.controller);
+          this._progress.end()
         }
       }).add(() => this._progress.end());
   }
@@ -91,12 +92,12 @@ export class FormGroupComponent extends InjectBase implements OnInit {
     if (event) {
       this.funcGroup.controller = event.key;
       this.funcGroup.title = event.value;
-
-      this.getListAction(this.funcGroup.area, this.funcGroup.controller);
+      this.getListAction(this.area.key, this.funcGroup.controller);
     }
   }
 
   getListAction(area: string, controller: string) {
+    console.log(new Date)
     this._progress.start();
     this._functionService.getListAction(area, controller)
       .subscribe({
@@ -123,7 +124,7 @@ export class FormGroupComponent extends InjectBase implements OnInit {
     this._config.closable = false;
     this._config.closeOnEscape = false;
     this.addMode = true;
-    this.disabled = true;
+    // this.disabled = true;
     let item = <ActionDetail>{
       // id: FunctionUtility.generateGUID(),
       isDelete: false,
@@ -136,7 +137,7 @@ export class FormGroupComponent extends InjectBase implements OnInit {
 
     this.funcGroup.actionDetails.unshift(item);
     console.log(this.funcGroup.actionDetails);
-    
+    console.log(table)
     table.reset();
     table.initRowEdit(item);
   }
@@ -148,9 +149,15 @@ export class FormGroupComponent extends InjectBase implements OnInit {
     this.entityClone = { ...item };
     table.initRowEdit(item);
   }
+  editRowAll(table: Table) {
+    this._config.closable = false;
+    this._config.closeOnEscape = false;
+    this.disabled = true;
+    table.initRowEdit(this.funcGroup.actionDetails[0]);
+  }
 
   deleteRow(item: ActionDetail) {
-    this._toast.confirm('Are you sure?', MessageConstants.CONFIRM_DELETE_MSG, () => this.funcGroup.actionDetails.remove(item));
+    this._toast.confirm('Are you sure?', MessageConstants.CONFIRM_DELETE_MSG, () => this.funcGroup.actionDetails.splice(this.funcGroup.actionDetails.indexOf(item), 1));
   }
 
   saveRow(table: Table, item: ActionDetail) {
@@ -191,6 +198,7 @@ export class FormGroupComponent extends InjectBase implements OnInit {
 
   execute(functionForm: NgForm, method: string, success: string, error: string) {
     this._progress.start();
+    this.funcGroup.area = this.area.key;
     this._functionService[method](this.funcGroup)
       .subscribe({
         next: (res: OperationResult) => {

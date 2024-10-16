@@ -30,7 +30,7 @@ export class MenuService {
     return this._http.put<OperationResult>(`${this.apiUrl}/Menu/Update`, menu);
   }
 
-  delete(id: string): Observable<OperationResult> {
+  delete(id: number): Observable<OperationResult> {
     return this._http.delete<OperationResult>(`${this.apiUrl}/Menu/Delete`, { params: { 'id': id } });
   }
 

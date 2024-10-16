@@ -58,7 +58,7 @@ namespace API._Services.Implementations.Auth
                 RefreshToken = refreshToken.Token,
                 Area = SettingsConfigUtility.GetCurrentSettings("AppSettings:Area"),
                 User = user,
-                // Menus = await GetMenus(user.AccountId)
+                Menus = await GetMenus(user.AccountId)
             };
 
             return userToReturn;
@@ -100,7 +100,7 @@ namespace API._Services.Implementations.Auth
                 RefreshToken = newRefreshToken.Token,
                 Area = SettingsConfigUtility.GetCurrentSettings("AppSettings:Area"),
                 User = user,
-                // Menus = await GetMenus(user.AccountId)
+                Menus = await GetMenus(user.AccountId)
             };
 
             return userToReturn;

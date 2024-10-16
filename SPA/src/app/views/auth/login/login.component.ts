@@ -37,7 +37,7 @@ export class LoginComponent extends InjectBase {
             .subscribe({
                 next: () => {
                     this._toast.success(MessageConstants.LOGIN_OK, CaptionConstants.SUCCESS);
-                    this._router.navigate(['/admin']);
+                    this._router.navigate(['/']);
                 },
                 error: () => {
                     this._toast.error('Đăng nhập thất bại', CaptionConstants.ERROR);
