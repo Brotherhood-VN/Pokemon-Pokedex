@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
-    [Table("Against")]
-    public partial class Against
+    [Table("AgainstForPokemon")]
+    public partial class AgainstForPokemon
     {
         [Key]
         public long Id { get; set; }
@@ -20,8 +20,5 @@ namespace API.Models
         public string Two { get; set; }
         [StringLength(500)]
         public string Four { get; set; }
-        [ForeignKey("PokemonId")]
-        [InverseProperty("Againsts")]
-        public virtual Pokemon Pokemon { get; set; }
     }
 }

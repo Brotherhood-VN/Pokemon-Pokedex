@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(AccountTypeDto dto)
         {
-            if (await _context.AccountType.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.AccountType.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Loại tài khoản đã tồn tại. Vui lòng thử lại !!!" };
 
             AccountType data = new()
@@ -49,7 +49,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(AccountTypeDto dto)
         {
-            AccountType data = await _context.AccountType.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            AccountType data = await _context.AccountType.FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Loại tài khoản không tồn tại. Vui lòng thử lại !!!" };
@@ -74,7 +74,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<AccountTypeDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<AccountType>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<AccountType>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -99,28 +99,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<AccountTypeDto> GetDetail(long id)
         {
-            var data = await _context.AccountType.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.AccountType
+                .Where(x => x.Id == id)
+                .Map<AccountTypeDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new AccountTypeDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListAccountType
         public async Task<List<KeyValuePair<long, string>>> GetListAccountType()
         {
-            return await _context.AccountType.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.AccountType.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -131,7 +122,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(AccountTypeDto dto)
         {
-            AccountType data = await _context.AccountType.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            AccountType data = await _context.AccountType.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Loại tài khoản không tồn tại. Vui lòng thử lại !!!" };
 

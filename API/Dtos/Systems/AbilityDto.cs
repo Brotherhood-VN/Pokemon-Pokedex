@@ -16,4 +16,9 @@ namespace API.Dtos.Systems
         public DateTime? UpdateTime { get; set; }
 
     }
+
+    public class AbilityParam
+    {
+
+    }
 }

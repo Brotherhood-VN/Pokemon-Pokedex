@@ -1,19 +1,28 @@
 import { DatePipe } from "@angular/common";
 
+//#region Declare
 declare global {
   interface Date {
     toDate(): Date;
     toUTCDate(): Date;
+
     toStringDate(_format?: string): string;
     toStringTime(_format?: string): string;
     toStringDateTime(_format?: string): string;
+
     toFirstDateOfMonth(): Date;
     toLastDateOfMonth(): Date;
     toFirstDateOfYear(): Date;
     toLastDateOfYear(): Date;
+
     toBeginDate(): Date;
     toEndDate(): Date;
+
     toSeq(): string;
+
+    addDays(days: number): Date;
+    addMonths(months: number): Date;
+    addYears(years: number): Date;
   }
 
   interface String {
@@ -25,23 +34,34 @@ declare global {
 
     toLowerCaseFirst(): string;
     toUpperCaseFirst(): string;
+    toTitleCase(): string;
 
-    generateASCII(_length: number): string;
-    generateUpper(_length: number): string;
-    random(_length: number): string;
+    isNumeric(): boolean;
+    thousandsSeperator(_seperator?: string): string;
   }
 
   interface Number {
     toStringLeadingZeros(targetLength: number): string;
-    randomBetween(min: number, max: number): number;
+    thousandsSeperator(_seperator?: string): string;
   }
 
   interface Array<T> {
     remove(item: T): Array<T>;
-    findDuplicateItems(filterConditions: string | Array<string>): T[];
+
+    findDuplicateItems(filterConditions: string | Array<string>): Array<T>;
+
+    distinct(): Array<T>;
+    distinctBy(key: string): Array<T>;
+
+    sum(): number;
+    sumBy(key: string): number;
+
+    deleteProperties(predicate: (value: T) => void): Array<T>;
   }
 }
+//#endregion
 
+//#region Date
 Date.prototype.toDate = function (): Date {
   const _this = this as string;
   return new Date(_this);
@@ -59,7 +79,7 @@ Date.prototype.toUTCDate = function (): Date {
     _this.getMilliseconds()));
 }
 
-Date.prototype.toStringDate = function (_format: string = 'dd/MM/yyyy'): string {
+Date.prototype.toStringDate = function (_format: string = 'MM/dd/yyyy'): string {
   const _this = this as Date;
   return new DatePipe('en-GB').transform(_this, _format);
 }
@@ -69,7 +89,7 @@ Date.prototype.toStringTime = function (_format: string = 'HH:mm:ss'): string {
   return new DatePipe('en-GB').transform(_this, _format);
 }
 
-Date.prototype.toStringDateTime = function (_format: string = 'dd/MM/yyyy HH:mm:ss'): string {
+Date.prototype.toStringDateTime = function (_format: string = 'MM/dd/yyyy HH:mm:ss'): string {
   const _this = this as Date;
   return new DatePipe('en-GB').transform(_this, _format);
 }
@@ -111,6 +131,26 @@ Date.prototype.toSeq = function (): string {
   return new DatePipe('en-GB').transform(_this, 'yyyyMMddHHmmssfff');
 }
 
+Date.prototype.addDays = function (days: number): Date {
+  const _this = this as Date;
+  _this.setDate(_this.getDate() + days);
+  return _this;
+}
+
+Date.prototype.addMonths = function (months: number): Date {
+  const _this = this as Date;
+  _this.setMonth(_this.getMonth() + 1 + months);
+  return _this;
+}
+
+Date.prototype.addYears = function (years: number): Date {
+  const _this = this as Date;
+  _this.setFullYear(_this.getFullYear() + years);
+  return _this;
+}
+//#endregion
+
+//#region String
 String.prototype.toDate = function (): Date {
   const _this = this as string;
   return new Date(_this);
@@ -121,7 +161,7 @@ String.prototype.toUTCDate = function (): Date {
   return _this.toDate().toUTCDate();
 }
 
-String.prototype.toStringDate = function (_format: string = 'dd/MM/yyyy'): string {
+String.prototype.toStringDate = function (_format: string = 'MM/dd/yyyy'): string {
   const _this = this as string;
   return new DatePipe('en-GB').transform(_this, _format);
 }
@@ -131,7 +171,7 @@ String.prototype.toStringTime = function (_format: string = 'HH:mm:ss'): string 
   return new DatePipe('en-GB').transform(_this, _format);
 }
 
-String.prototype.toStringDateTime = function (_format: string = 'dd/MM/yyyy HH:mm:ss'): string {
+String.prototype.toStringDateTime = function (_format: string = 'MM/dd/yyyy HH:mm:ss'): string {
   const _this = this as string;
   return new DatePipe('en-GB').transform(_this, _format);
 }
@@ -146,49 +186,44 @@ String.prototype.toUpperCaseFirst = function (): string {
   return _this.charAt(0).toUpperCase() + _this.slice(1);
 }
 
-String.prototype.generateASCII = function (_length: number): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = ' ';
-  const charactersLength = characters.length;
-  for (let i = 0; i < charactersLength; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
+String.prototype.toTitleCase = function (): string {
+  return this.replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+};
 
-  return result.substring(0, _length + 1);
+String.prototype.isNumeric = function (): boolean {
+  const _this = this as string;
+  return /^-?\d+$/.test(_this);
 }
 
-String.prototype.generateUpper = function (_length: number): string {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = ' ';
-  const charactersLength = characters.length;
-  for (let i = 0; i < charactersLength; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
+String.prototype.thousandsSeperator = function (_seperator: string = ','): string {
+  const _this = this as string;
+  if (!_this.isNumeric())
+    return '';
 
-  return result.substring(0, _length + 1);
+  return _this.replace(/\B(?=(\d{3})+(?!\d))/g, _seperator);
 }
+//#endregion
 
-String.prototype.random = function (_length: number): string {
-  return Math.random().toString(36).substring(2, _length);
-}
-
+//#region Number
 Number.prototype.toStringLeadingZeros = function (targetLength: number): string {
   const _this = this as number;
   return String(_this).padStart(targetLength, '0');
 }
 
-Number.prototype.randomBetween = function (min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+Number.prototype.thousandsSeperator = function (_seperator: string = ','): string {
+  return Number(this).toString().replace(/\B(?=(\d{3})+(?!\d))/g, _seperator);
 }
+//#endregion
 
-Array.prototype.remove = function <T>(this: T[], elem: T): T[] {
+//#region Array
+Array.prototype.remove = function <T>(this: Array<T>, elem: T): Array<T> {
   return this.splice(this.indexOf(elem), 1);
 }
 
-Array.prototype.findDuplicateItems = function <T>(filterConditions: string | Array<string>): T[] {
-  const _this = this as T[];
+Array.prototype.findDuplicateItems = function <T>(filterConditions: string | Array<string>): Array<T> {
+  const _this = this as Array<T>;
 
-  let foundElements: T[] = [];
+  let foundElements: Array<T> = [];
   if (typeof (filterConditions) === 'string') {
     _this.forEach((item: T) => {
       if (_this.filter(x => {
@@ -214,8 +249,37 @@ Array.prototype.findDuplicateItems = function <T>(filterConditions: string | Arr
     });
   }
 
-  return Array.from(new Set(foundElements));
+  return foundElements.distinct();
 }
 
+Array.prototype.distinct = function <T>(this: Array<T>): Array<T> {
+  return Array.from(new Set(this));
+}
+
+Array.prototype.distinctBy = function <T>(this: Array<T>, key: string): Array<T> {
+  return Array.from(new Set(new Map(this.map(item => [item[key], item])).values()));
+}
+
+Array.prototype.sum = function (this: Array<number>): number {
+  return this.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0);
+}
+
+Array.prototype.sumBy = function <T>(this: Array<T>, key: string): number {
+  return this.map((item: T) => item[key]).sum();
+}
+
+Array.prototype.deleteProperties = function <T>(this: Array<T>, predicate: (value: T) => void): Array<T> {
+  let properties = predicate.toString()
+    .replace(/[x.=>{};]/g, '').trim()
+    .split(/[\s,]+/);
+
+  let results = this.map(item => {
+    properties.forEach(key => delete (item[key]))
+    return item;
+  });
+
+  return results;
+}
+//#endregion
 
 export { };

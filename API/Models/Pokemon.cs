@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,8 +10,8 @@ namespace API.Models
         public Pokemon()
         {
             PokemonAbilities = new HashSet<PokemonAbility>();
-            Againsts = new HashSet<Against>();
             PokemonGameVersions = new HashSet<PokemonGameVersion>();
+            Againsts = new HashSet<Against>();
             PokemonGens = new HashSet<PokemonGen>();
             PokemonClasses = new HashSet<PokemonClass>();
             PokemonSkills = new HashSet<PokemonSkill>();
@@ -55,9 +56,9 @@ namespace API.Models
         [InverseProperty("Pokemon")]
         public virtual ICollection<PokemonAbility> PokemonAbilities { get; set; }
         [InverseProperty("Pokemon")]
-        public virtual ICollection<Against> Againsts { get; set; }
-        [InverseProperty("Pokemon")]
         public virtual ICollection<PokemonGameVersion> PokemonGameVersions { get; set; }
+        [InverseProperty("Pokemon")]
+        public virtual ICollection<Against> Againsts { get; set; }
         [InverseProperty("Pokemon")]
         public virtual ICollection<PokemonGen> PokemonGens { get; set; }
         [InverseProperty("Pokemon")]

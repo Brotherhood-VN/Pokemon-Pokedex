@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(GenderDto dto)
         {
-            if (await _context.Gender.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.Gender.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Giới tính đã tồn tại. Vui lòng thử lại !!!" };
 
             Gender data = new()
@@ -48,7 +48,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(GenderDto dto)
         {
-            Gender data = await _context.Gender.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Gender data = await _context.Gender.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Giới tính không tồn tại. Vui lòng thử lại !!!" };
 
@@ -72,7 +72,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<GenderDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<Gender>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Gender>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -97,28 +97,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<GenderDto> GetDetail(long id)
         {
-            var data = await _context.Gender.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.Gender
+                .Where(x => x.Id == id)
+                .Map<GenderDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new GenderDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListGender
         public async Task<List<KeyValuePair<long, string>>> GetListGender()
         {
-            return await _context.Gender.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.Gender.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -129,7 +120,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(GenderDto dto)
         {
-            Gender data = await _context.Gender.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Gender data = await _context.Gender.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Giới tính không tồn tại. Vui lòng thử lại !!!" };
 

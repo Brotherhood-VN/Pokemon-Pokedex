@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(ClassificationDto dto)
         {
-            if (await _context.Classification.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.Classification.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Hệ đã tồn tại. Vui lòng thử lại !!!" };
 
             Classification data = new()
@@ -49,7 +49,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(ClassificationDto dto)
         {
-            Classification data = await _context.Classification.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Classification data = await _context.Classification.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Hệ không tồn tại. Vui lòng thử lại !!!" };
 
@@ -73,7 +73,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<ClassificationDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<Classification>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Classification>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -99,29 +99,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<ClassificationDto> GetDetail(long id)
         {
-            var data = await _context.Classification.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.Classification
+                .Where(x => x.Id == id)
+                .Map<ClassificationDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new ClassificationDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                Icon = data.Icon,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListClassification
         public async Task<List<KeyValuePair<long, string>>> GetListClassification()
         {
-            return await _context.Classification.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.Classification.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -132,7 +122,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(ClassificationDto dto)
         {
-            Classification data = await _context.Classification.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Classification data = await _context.Classification.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Hệ không tồn tại. Vui lòng thử lại !!!" };
 

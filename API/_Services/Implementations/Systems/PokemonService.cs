@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(PokemonDto dto)
         {
-            if (await _context.Pokemon.AnyAsync(x => x.Index.Trim() == dto.Index.Trim() && x.IsDelete == false))
+            if (await _context.Pokemon.AnyAsync(x => x.Index.Trim() == dto.Index.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Khả năng đã tồn tại. Vui lòng thử lại !!!" };
 
             Pokemon data = new()
@@ -192,7 +192,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(PokemonDto dto)
         {
-            Pokemon data = await _context.Pokemon.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Pokemon data = await _context.Pokemon.FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Khả năng không tồn tại. Vui lòng thử lại !!!" };
@@ -217,7 +217,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<PokemonDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<Pokemon>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Pokemon>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -398,7 +398,7 @@ namespace API._Services.Implementations.Systems
         #region GetListPokemon
         public async Task<List<KeyValuePair<long, string>>> GetListPokemon()
         {
-            return await _context.Pokemon.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.Pokemon.Where(x => x.Status == true)
                 .OrderBy(x => x.Index)
                 .ThenBy(x => x.FullName)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Index} - {x.FullName}"))
@@ -409,7 +409,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(PokemonDto dto)
         {
-            Pokemon data = await _context.Pokemon.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Pokemon data = await _context.Pokemon.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Khả năng không tồn tại. Vui lòng thử lại !!!" };
 

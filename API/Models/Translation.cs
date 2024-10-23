@@ -4,20 +4,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
-    [Table("Gender")]
-    public partial class Gender
+    [Table("Translation")]
+    public partial class Translation
     {
         [Key]
         public long Id { get; set; }
         [Required]
-        [StringLength(10)]
-        public string Code { get; set; }
+        [StringLength(250)]
+        public string FromTable { get; set; }
         [Required]
-        [StringLength(100)]
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public bool Status { get; set; }
-        public bool IsDelete { get; set; }
+        [StringLength(10)]
+        public string Language { get; set; }
+        [Required]
+        [StringLength(250)]
+        public string Key { get; set; }
+        [Required]
+        public string Value { get; set; }
+        public bool? Status { get; set; }
+        public bool? IsDelete { get; set; }
         public long CreateBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime CreateTime { get; set; }

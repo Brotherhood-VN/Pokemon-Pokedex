@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(GameVersionDto dto)
         {
-            if (await _context.GameVersion.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.GameVersion.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Phiên bản trò chơi đã tồn tại. Vui lòng thử lại !!!" };
 
             GameVersion data = new()
@@ -49,7 +49,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(GameVersionDto dto)
         {
-            GameVersion data = await _context.GameVersion.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            GameVersion data = await _context.GameVersion.FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Phiên bản trò chơi không tồn tại. Vui lòng thử lại !!!" };
@@ -74,7 +74,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<GameVersionDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<GameVersion>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<GameVersion>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -99,28 +99,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<GameVersionDto> GetDetail(long id)
         {
-            var data = await _context.GameVersion.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.GameVersion
+                .Where(x => x.Id == id)
+                .Map<GameVersionDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new GameVersionDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListGameVersion
         public async Task<List<KeyValuePair<long, string>>> GetListGameVersion()
         {
-            return await _context.GameVersion.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.GameVersion.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -131,7 +122,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(GameVersionDto dto)
         {
-            GameVersion data = await _context.GameVersion.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            GameVersion data = await _context.GameVersion.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Phiên bản trò chơi không tồn tại. Vui lòng thử lại !!!" };
 

@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { KeyValuePair } from "./key-value-utility";
 
 @Injectable({
   providedIn: "root",
@@ -10,15 +11,6 @@ export class FunctionUtility {
    */
   static checkEmpty(str: any) {
     return !str || /^\s*$/.test(str);
-  }
-
-  /**
-  * Append property HttpParams
-  * @param str
-  * Viết Hoa chữ cái đầu tiên trong chuỗi
-  */
-  static toUpperCaseFirst(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   static toFormData(obj: any, form?: FormData, namespace?: string) {
@@ -52,17 +44,72 @@ export class FunctionUtility {
   static generateGUID(): string {
     return "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(/[x]/g, (c: any) =>
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
+    ).toUpperCase();
   }
 
   static generateASCII = function (_length: number) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = ' ';
     const charactersLength = characters.length;
     for (let i = 0; i < charactersLength; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 
-    return result.substring(0, _length + 1).toUpperCase();
+    return result.substring(0, _length + 1);
+  }
+
+  static randomBetween(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  static deleteProperties(obj: any) {
+    Object.entries(obj).forEach(([key, val]) => {
+      let value = val as any;
+      !value || value?.length === 0 ? delete obj[key] : 0;
+    });
+    return obj;
+  }
+
+  static deleteArrayProperties(array: any[], properties: string | string[]) {
+    let results = array.map((item: any) => {
+      typeof (properties) === 'string' ? delete (item[properties.trim()]) : properties.forEach(key => delete (item[key.trim()]));
+      return item;
+    });
+
+    return results;
+  }
+
+  static getKeyValuePairs(obj: any): KeyValuePair[] {
+    let results = Object.entries(obj).map(([key, val]) => {
+      return <KeyValuePair>{ key: key, value: val }
+    });
+
+    return results;
+  }
+
+  static getKeyByValue(obj: any, value: any) {
+    return Object.keys(obj).find(key => obj[key] === value);
+  }
+
+  static getValueByKey(obj: any, key: any) {
+    return Object.values(obj).find(val => obj[key] === val);
+  }
+
+  /**
+   * Diffs date - compare two days
+   * 
+   * Note: startDate is less than or equal to endDate
+   * @param startDate
+   * @param endDate
+   * @returns number days
+   */
+  static diffDate(startDate: string | Date, endDate: string | Date): number {
+    // get time of one day (24 hours, 60 minutes, 60 seconds)
+    let oneDay = 1000 * 60 * 60 * 24;
+
+    let startTime = startDate.toUTCDate().getTime();
+    let endTime = endDate.toUTCDate().getTime();
+
+    return Math.round(Math.abs((startTime - endTime)) / oneDay);
   }
 }

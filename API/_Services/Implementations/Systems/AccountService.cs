@@ -24,7 +24,7 @@ namespace API._Services.Implementations.Systems
             if (string.IsNullOrWhiteSpace(dto.Password))
                 return new OperationResult { IsSuccess = false, Message = "Mật khẩu không được để trống !!!" };
 
-            if (await _context.Account.AnyAsync(x => x.UserName.Trim() == dto.UserName.Trim() && x.IsDelete == false))
+            if (await _context.Account.AnyAsync(x => x.UserName.Trim() == dto.UserName.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Tài khoản đã tồn tại. Vui lòng thử lại !!!" };
 
             using var _transaction = await _context.Database.BeginTransactionAsync();
@@ -87,7 +87,7 @@ namespace API._Services.Implementations.Systems
 
         public async Task<OperationResult> ChangePassword(AccountChangePassword dto)
         {
-            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Tài khoản không tồn tại. Vui lòng thử lại !!!" };
             if (data.Password != EncryptorUtility.EncryptUserPassword(dto.Password))
@@ -115,7 +115,7 @@ namespace API._Services.Implementations.Systems
 
         public async Task<OperationResult> ResetPassword(long id)
         {
-            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == id && x.IsDelete == false);
+            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Tài khoản không tồn tại. Vui lòng thử lại !!!" };
 
@@ -135,7 +135,7 @@ namespace API._Services.Implementations.Systems
 
         public async Task<OperationResult> Delete(AccountDto dto)
         {
-            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Tài khoản không tồn tại. Vui lòng thử lại !!!" };
 
@@ -157,7 +157,7 @@ namespace API._Services.Implementations.Systems
 
         public async Task<PaginationUtility<AccountDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<Account>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Account>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -200,7 +200,7 @@ namespace API._Services.Implementations.Systems
 
         public async Task<OperationResult> Update(AccountDto dto)
         {
-            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Account data = await _context.Account.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Tài khoản không tồn tại. Vui lòng thử lại !!!" };
 

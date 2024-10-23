@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +9,6 @@ namespace API.Models
     {
         public Area()
         {
-            Regions = new HashSet<Region>();
             Stats = new HashSet<Stat>();
         }
 
@@ -29,8 +29,10 @@ namespace API.Models
         public long? UpdateBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
-        [InverseProperty("Area")]
-        public virtual ICollection<Region> Regions { get; set; }
+        public long RegionId { get; set; }
+        [ForeignKey("RegionId")]
+        [InverseProperty("Areas")]
+        public virtual Region Region { get; set; }
         [InverseProperty("Area")]
         public virtual ICollection<Stat> Stats { get; set; }
     }

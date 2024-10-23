@@ -224,7 +224,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<FunctionViewDto>> GetDataPagination(PaginationParam pagination, FunctionSearchParam param, bool isPaging = true)
         {
-            var predicate = PredicateBuilder.New<Function>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Function>(true);
             if (!string.IsNullOrWhiteSpace(param.Area))
                 predicate.And(x => x.Area.ToLower() == param.Area.ToLower());
             if (!string.IsNullOrWhiteSpace(param.Controller))
@@ -342,12 +342,19 @@ namespace API._Services.Implementations.Systems
         #region GetListController
         public async Task<List<KeyValuePair<string, string>>> GetListController(string area)
         {
+            List<string> funcs = await _context.Function
+                .Where(x => x.IsMenu == true).AsNoTracking()
+                .Select(x => x.Controller).ToListAsync();
+
             Assembly asm = Assembly.GetExecutingAssembly();
 
             var controllers = asm.GetTypes()
-                .Where(type => typeof(ControllerBase).IsAssignableFrom(type))
+                .Where(type => typeof(ControllerBase).IsAssignableFrom(type) && type.GetCustomAttributes(typeof(IsMenuAttribute), true).Any())
                 .SelectMany(type => type.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
-                .Where(x => x.DeclaringType.FullName.Contains(area) && !x.Name.StartsWith("GetList") && !x.Name.StartsWith("GetAll"))
+                .Where(
+                    x => x.DeclaringType.FullName.Contains(area) &&
+                    x.GetCustomAttributes<MenuMemberAttribute>(true).Any() &&
+                    !funcs.Contains(x.DeclaringType.Name.Replace("Controller", "")))
                 .Select(x => x.DeclaringType.Name.Replace("Controller", ""))
                 .Distinct().ToList();
 

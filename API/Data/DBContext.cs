@@ -18,6 +18,7 @@ namespace API.Data
         public virtual DbSet<AccountRole> AccountRole { get; set; }
         public virtual DbSet<AccountType> AccountType { get; set; }
         public virtual DbSet<Against> Against { get; set; }
+        public virtual DbSet<AgainstForPokemon> AgainstForPokemon { get; set; }
         public virtual DbSet<Area> Area { get; set; }
         public virtual DbSet<Breeding> Breeding { get; set; }
         public virtual DbSet<Classification> Classification { get; set; }
@@ -46,8 +47,8 @@ namespace API.Data
         public virtual DbSet<Stat> Stat { get; set; }
         public virtual DbSet<StatType> StatType { get; set; }
         public virtual DbSet<Stone> Stone { get; set; }
-        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<Training> Training { get; set; }
+        public virtual DbSet<Translation> Translation { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,12 +56,14 @@ namespace API.Data
             modelBuilder.Entity<Ability>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
                 entity.HasOne(d => d.AccountType).WithMany(p => p.Accounts).HasForeignKey(d => d.AccountTypeId).HasConstraintName("FK_Account_AccountType");
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<AccountFunction>(entity =>
@@ -80,6 +83,7 @@ namespace API.Data
             modelBuilder.Entity<AccountType>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Against>(entity =>
@@ -88,9 +92,16 @@ namespace API.Data
                 entity.HasOne(d => d.Pokemon).WithMany(p => p.Againsts).HasForeignKey(d => d.PokemonId).HasConstraintName("FK_Against_Pokemon");
             });
 
+            modelBuilder.Entity<AgainstForPokemon>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+            });
+
             modelBuilder.Entity<Area>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasOne(d => d.Region).WithMany(p => p.Areas).HasForeignKey(d => d.RegionId).HasConstraintName("FK_Area_Region");
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Breeding>(entity =>
@@ -101,11 +112,13 @@ namespace API.Data
             modelBuilder.Entity<Classification>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Condition>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Form>(entity =>
@@ -116,26 +129,31 @@ namespace API.Data
             modelBuilder.Entity<Function>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<GameVersion>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Gender>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Generation>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Item>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Menu>(entity =>
@@ -148,6 +166,7 @@ namespace API.Data
                 entity.HasKey(e => new { e.Id });
                 entity.HasOne(d => d.Stone).WithMany(p => p.Pokemons).HasForeignKey(d => d.StoneId).HasConstraintName("FK_Pokemon_Stone");
                 entity.HasOne(d => d.Rank).WithMany(p => p.Pokemons).HasForeignKey(d => d.RankId).HasConstraintName("FK_Pokemon_Rank");
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<PokemonAbility>(entity =>
@@ -188,6 +207,7 @@ namespace API.Data
             modelBuilder.Entity<Rank>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<RefreshToken>(entity =>
@@ -201,12 +221,13 @@ namespace API.Data
             modelBuilder.Entity<Region>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
-                entity.HasOne(d => d.Area).WithMany(p => p.Regions).HasForeignKey(d => d.AreaId).HasConstraintName("FK_Region_Region");
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<RoleFunction>(entity =>
@@ -221,6 +242,7 @@ namespace API.Data
                 entity.HasKey(e => new { e.Id });
                 entity.HasOne(d => d.Item).WithMany(p => p.Skills).HasForeignKey(d => d.ItemId).HasConstraintName("FK_Skill_Item");
                 entity.HasOne(d => d.Generation).WithMany(p => p.Skills).HasForeignKey(d => d.GenerationId).HasConstraintName("FK_Skill_Generation");
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<SkillCondition>(entity =>
@@ -249,21 +271,24 @@ namespace API.Data
             modelBuilder.Entity<StatType>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Stone>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
-            });
-
-            modelBuilder.Entity<sysdiagrams>(entity =>
-            {
-                entity.HasKey(e => new { e.diagram_id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             modelBuilder.Entity<Training>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
+            });
+
+            modelBuilder.Entity<Translation>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+                entity.HasQueryFilter(x => x.IsDelete == false);
             });
 
             OnModelCreatingPartial(modelBuilder);

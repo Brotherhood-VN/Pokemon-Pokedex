@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(StatTypeDto dto)
         {
-            if (await _context.StatType.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.StatType.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Loại chỉ số đã tồn tại. Vui lòng thử lại !!!" };
 
             StatType data = new()
@@ -49,7 +49,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(StatTypeDto dto)
         {
-            StatType data = await _context.StatType.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            StatType data = await _context.StatType.FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Loại chỉ số không tồn tại. Vui lòng thử lại !!!" };
@@ -74,7 +74,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<StatTypeDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<StatType>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<StatType>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -99,28 +99,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<StatTypeDto> GetDetail(long id)
         {
-            var data = await _context.StatType.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.StatType
+                .Where(x => x.Id == id)
+                .Map<StatTypeDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new StatTypeDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListStatType
         public async Task<List<KeyValuePair<long, string>>> GetListStatType()
         {
-            return await _context.StatType.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.StatType.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -131,7 +122,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(StatTypeDto dto)
         {
-            StatType data = await _context.StatType.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            StatType data = await _context.StatType.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Loại chỉ số không tồn tại. Vui lòng thử lại !!!" };
 

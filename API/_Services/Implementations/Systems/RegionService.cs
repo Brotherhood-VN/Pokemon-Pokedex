@@ -19,7 +19,7 @@ namespace API._Services.Implementations.Systems
         #region Create
         public async Task<OperationResult> Create(RegionDto dto)
         {
-            if (await _context.Region.AnyAsync(x => x.Code.Trim() == dto.Code.Trim() && x.IsDelete == false))
+            if (await _context.Region.AnyAsync(x => x.Code.Trim() == dto.Code.Trim()))
                 return new OperationResult { IsSuccess = false, Message = "Vùng đất đã tồn tại. Vui lòng thử lại !!!" };
 
             Region data = new()
@@ -49,7 +49,7 @@ namespace API._Services.Implementations.Systems
         #region Delete
         public async Task<OperationResult> Delete(RegionDto dto)
         {
-            Region data = await _context.Region.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Region data = await _context.Region.FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Vùng đất không tồn tại. Vui lòng thử lại !!!" };
@@ -74,7 +74,7 @@ namespace API._Services.Implementations.Systems
         #region GetDataPagination
         public async Task<PaginationUtility<RegionDto>> GetDataPagination(PaginationParam pagination, string keyword)
         {
-            var predicate = PredicateBuilder.New<Region>(x => x.IsDelete == false);
+            var predicate = PredicateBuilder.New<Region>(true);
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.ToLower();
@@ -99,28 +99,19 @@ namespace API._Services.Implementations.Systems
         #region GetDetail
         public async Task<RegionDto> GetDetail(long id)
         {
-            var data = await _context.Region.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _context.Region
+                .Where(x => x.Id == id)
+                .Map<RegionDto>()
+                .AsNoTracking().FirstOrDefaultAsync();
 
-            return new RegionDto
-            {
-                Id = data.Id,
-                Code = data.Code,
-                Title = data.Title,
-                Description = data.Description,
-                IsDelete = data.IsDelete,
-                Status = data.Status,
-                CreateBy = data.CreateBy,
-                CreateTime = data.CreateTime,
-                UpdateBy = data.UpdateBy,
-                UpdateTime = data.UpdateTime
-            };
+            return data;
         }
         #endregion
 
         #region GetListRegion
         public async Task<List<KeyValuePair<long, string>>> GetListRegion()
         {
-            return await _context.Region.Where(x => x.IsDelete == false && x.Status == true)
+            return await _context.Region.Where(x => x.Status == true)
                 .OrderBy(x => x.Code)
                 .ThenBy(x => x.Title)
                 .Select(x => new KeyValuePair<long, string>(x.Id, $"{x.Code} - {x.Title}"))
@@ -131,7 +122,7 @@ namespace API._Services.Implementations.Systems
         #region Update
         public async Task<OperationResult> Update(RegionDto dto)
         {
-            Region data = await _context.Region.FirstOrDefaultAsync(x => x.Id == dto.Id && x.IsDelete == false);
+            Region data = await _context.Region.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (data is null)
                 return new OperationResult { IsSuccess = false, Message = "Vùng đất không tồn tại. Vui lòng thử lại !!!" };
 
